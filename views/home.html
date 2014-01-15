@@ -1,26 +1,27 @@
 <html>
-	<head>
-		<title>Resonate</title>
-		<style>
-		button{display: block;}
-		</style>
+  <head>
+    <title>Resonate</title>
+    <style>
+    button{display: block;}
+    </style>
   </head>
   <body>
-	<button onclick="toggleLiveInput()">Sing It!</button>
+  <button onclick="Detecter.toggleLiveInput()">Sing It!</button>
     <canvas id="myCanvas"></canvas>
     <div id="detector" class="vague">
-		<canvas id="output"></canvas>
-		<div class="pitch"><span id="pitch">--</span>Hz</div>
-		<div class="note"><span id="note">--</span></div>   
-		<div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
-	</div>
+    <canvas id="output"></canvas>
+    <div class="pitch"><span id="pitch">--</span>Hz</div>
+    <div class="note"><span id="note">--</span></div>
+    <div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
+  </div>
     <script type="text/javascript" src="/public/js/p5.js"></script>
     <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
     <script type="text/javascript">
-    	var note;
-    	var pitch;
+      var note;
+      var pitch;
     </script>
     <script type="text/javascript" src="/public/js/pitchdetect.js"></script>
+    <script type="text/javascript" src="/public/js/ball.js"></script>
     <script type="text/javascript" src="/public/js/potato.js"></script>
     <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
   </body>
