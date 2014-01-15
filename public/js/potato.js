@@ -1,93 +1,54 @@
-(function () {
-  "use strict";
+(function (exports) {
+  var canvas = document.getElementById("myCanvas");
+  var p = new Processing(canvas, sketchProc);
     // Simple way to attach js code to the canvas is by using a function
   function sketchProc(processing) {
-    var p                     = processing,
-      n                       = 20,
-      balls                   = [];
-	  
-      
-	function ball(x,y){
-				
-		this.x=x;
-		this.y=y;
+    var n                   = 20,
+        balls               = [];
 
-		this.paint = function(){
-			
-			p.fill(255);
-      p.noStroke();
-      p.ellipse(this.x,this.y,n,n);
-      p.fill(0);
-      p.ellipse(this.x-3,this.y-3,3,3);
-      p.ellipse(this.x+3,this.y-3,3,3);
-		};
+    processing.setup = function () {
 
-    }
-
-
-	
-    p.setup = function () {
-
-      p.size(1201, 700);
-      //p.frameRate(18);
-      p.smooth();
-
-      balls.push(new ball(p.width/2,p.height/2));
+      processing.size(1201, 700);
+      //processing.frameRate(18);
+      processing.smooth();
+      balls.push(new Ball(processing.width / 2, processing.height / 2, n, processing));
 
     };
 
 
-  p.draw = function () {
+    processing.draw = function () {
 
-      p.background(0);
-
-      p.stroke(255);
-      p.line(0,p.height/2,p.width,p.height/2);
-
+      processing.background(0);
+      processing.stroke(255);
+      processing.line(0, p.height / 2, p.width, p.height / 2);
       balls[0].paint();
-      console.log(pitch);
+      balls[0].jump(40, 500);
+      console.log(note+""+pitch);
+	  };
 
-      if(note!=undefined){
+    processing.mousePressed = function(){
 
-       jump();
-      }
-	};
+      var disX = p.mouseX - balls[0].x;
+      balls[0].x += disX * 0.1;
 
-  p.mousePressed = function(){
-
-    var disX=p.mouseX-balls[0].x;
-   
-    balls[0].x+=disX*.1;
-
-  };
-
+    };
+/*
 function jump(){
 
     var heit;
-    /*
-    if(note==125){
-      heit=p.height/2;
-    }
-    else{
-      heit= p.map(note,40,80,p.height-n,n);
-    }
-    */
+
     if(pitch==11025){
-      heit=p.height/2;
+      heit=processing.height/2;
     }
     else{
-      heit= p.map(pitch,40,500,p.height-n,n);
+      heit= processing.map(pitch,40,500,processing.height-n,n);
     }
     var disY = heit-balls[0].y;
-    balls[0].y+=disY*.1;
-    balls[0].y=p.constrain(balls[0].y,n,p.height-n);
+    balls[0].y+=disY*0.1;
+    balls[0].y=processing.constrain(balls[0].y,n,processing.height-n);
 
   };
-
-
+*/
   }
 
-  var canvas = document.getElementById("myCanvas"),
-    p = new Processing(canvas, sketchProc);
- 
-}());
+})(this);
