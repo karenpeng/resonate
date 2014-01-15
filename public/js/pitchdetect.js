@@ -339,5 +339,7 @@
   }
 
   //exports what you need
-  exports.toggleLiveInput = toggleLiveInput;
+  exports.Detecter = {
+    toggleLiveInput: toggleLiveInput
+  };
 })(this);
