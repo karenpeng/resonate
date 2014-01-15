@@ -23,7 +23,7 @@
       processing.line(0, p.height / 2, p.width, p.height / 2);
       balls[0].paint();
       balls[0].jump(40, 500);
-      console.log(note+""+pitch);
+      console.log(note+" "+pitch);
 	  };
 
     processing.mousePressed = function(){
