@@ -1,5 +1,5 @@
-  //(function(){
-
+(function(exports){
+  exports.connections = null;
   // Connect to PeerJS, have server assign an ID instead of providing one
   var conn;
   var c;
@@ -11,8 +11,9 @@
 
   peer.on('connection',function(conn){
     //conn = c;
-    conn.on('open', function() {
+    //conn.on('open', function() {
     // Receive messages
+    /*
       conn.on('data', function(data) {
        console.log("server received", data.a, data.b);
       });
@@ -22,19 +23,26 @@
         a: me.x,
         b: me.y
       };
-      //conn.send(location);
+
       conn.send(location);
-      //console.log("i know my location" + " " + me.x + " " + me.y);
-    });
+
+      console.log("i know my location" + " " + me.x + " " + me.y);
+    */
+    if(exports.connections){
+      return;
+    }
+    exports.connections = conn;
+    //peer.removeListener('connection');
+
+    //});
   });
 
-$(document).ready(function() {
+  $(document).ready(function() {
     // Conect to a peer
-  $('#connect').click(function(){
-    c = peer.connect($('#rid').val());
+    $('#connect').click(function(){
+    //c.on('open', function(){
 
-    c.on('open', function(){
-
+      /*
       c.on('data',function(data){
         console.log('client received', data.a, data.b);
       });
@@ -43,74 +51,26 @@ $(document).ready(function() {
         a: me.x,
         b: me.y
       };
+
       c.send(position);
+      */
+      if(exports.connections){
+        return;
+      }
+      c = peer.connect($('#rid').val());
+      exports.connections = c;
+      //peer.removeListener('connection');
+
+      //});
+
+      c.on('error', function(err){
+        alert(err)
+      });
 
     });
 
-    c.on('error', function(err){
-      alert(err)
-    });
-
   });
 
-});
+  //exports.connections = connections;
 
-/*
-var peer1 = new Peer({ key: '6vs0jb4y7a2zw7b9', debug: 3});
-    // Create another Peer with our demo API key to connect to.
-var peer2 = new Peer({ key: '6vs0jb4y7a2zw7b9', debug: 3});
-
-    // The `open` event signifies that the Peer is ready to connect with other
-    // Peers and, if we didn't provide the Peer with an ID, that an ID has been
-    // assigned by the server.
-peer1.on('open', function(id){
-  var peerId1 = id;
-  var c = peer2.connect(peerId1);
-  c.on('data', function(data) {
-        // When we receive 'Hello', send ' world'.
-    $('#helloworld').append(data);
-    c.send(' peer');
-  });
-});
-
-    // Wait for a connection from the second peer.
-peer1.on('connection', function(connection) {
-      // This `connection` is a DataConnection object with which we can send
-      // data.
-      // The `open` event firing means that the connection is now ready to
-      // transmit data.
-  connection.on('open', function() {
-        // Send 'Hello' on the connection.
-    connection.send('Hello,');
-  });
-      // The `data` event is fired when data is received on the connection.
-  connection.on('data', function(data) {
-        // Append the data to body.
-    $('#helloworld').append(data);
-  });
-});
-*/
-
-/*
-var obj = {
-  a: 1,
-  b: 2,
-  c: 3
-}
-for (var key in obj) {
-  console.log(key, obj[key]);
-}
-
-var arr = [1, 2, 3];
-
-arr.forEach(function (item) {
-  console.log(item);
-});
-
-var newArr = arr.map(function (item) {
-  return item * 2;
-});
-
-console.log(newArr);
-*/
-//})
+})(this)

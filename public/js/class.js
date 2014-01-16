@@ -21,15 +21,15 @@
 
     Ball.prototype.jump = function(min,max){
 
-      if(note != undefined){
+      if(pitchDetector.pitch){
 
         var heit;
 
-        if(pitch === 11025){
+        if(pitchDetector.pitch === 11025){
          heit = this.processing.height / 2;
         }
         else{
-         heit = this.processing.map(pitch, min, max, this.processing.height - this.n, this.n);
+         heit = this.processing.map(pitchDetector.pitch, min, max, this.processing.height - this.n, this.n);
         }
 
         var disY = heit - this.y;
