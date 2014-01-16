@@ -2,9 +2,11 @@
   var canvas = document.getElementById("myCanvas");
   var p = new Processing(canvas, sketchProc);
     // Simple way to attach js code to the canvas is by using a function
+
+  var me;
   function sketchProc(processing) {
-    var n                   = 20,
-        balls               = [];
+    var n                   = 20;
+    var balls               = [];
 
     processing.setup = function () {
 
@@ -12,7 +14,7 @@
       //processing.frameRate(18);
       processing.smooth();
       balls.push(new Ball(processing.width / 2, processing.height / 2, n, processing));
-
+      me=balls[0];
     };
 
 
@@ -23,7 +25,7 @@
       processing.line(0, p.height / 2, p.width, p.height / 2);
       balls[0].paint();
       balls[0].jump(40, 500);
-      console.log(note+" "+pitch);
+      //console.log(note+" "+pitch);
 	  };
 
     processing.mousePressed = function(){
@@ -50,5 +52,7 @@ function jump(){
   };
 */
   }
+
+  exports.me=me;
 
 })(this);

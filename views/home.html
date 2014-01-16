@@ -9,17 +9,21 @@
 	<button onclick="toggleLiveInput()">Sing It!</button>
     <canvas id="myCanvas"></canvas>
     <div id="detector" class="vague">
-		<canvas id="output"></canvas>
-		<div class="pitch"><span id="pitch">--</span>Hz</div>
-		<div class="note"><span id="note">--</span></div>
-		<div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
-	</div>
+		  <canvas id="output"></canvas>
+		  <div class="pitch"><span id="pitch">--</span>Hz</div>
+		  <div class="note"><span id="note">--</span></div>
+		  <div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
+	 </div>
+    Your PeerJS id is : <span id="pid"></span><br><br>
+    Connect to peer: <input type="text" id="rid" placeholder="Someone else's id">
+                   <input type="button" value="Connect" id="connect"><br><br>
     <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
     <script type="text/javascript" src="/public/js/processing.js"></script>
     <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
     <script type="text/javascript" src="/public/js/pitchdetect.js"></script>
     <script type="text/javascript" src="/public/js/class.js"></script>
     <script type="text/javascript" src="/public/js/potato.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script type="text/javascript" src="/public/js/withu.js"></script>
   </body>
 </html>

@@ -40,8 +40,9 @@
     };
 
     exports.Ball = Ball;
+    /*
     console.log(exports===this);
     console.log(exports===window);
     console.log('exec this function');
-
+    */
     })(this);
