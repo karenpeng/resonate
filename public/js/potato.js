@@ -1,13 +1,13 @@
 (function (exports) {
   var canvas = document.getElementById("myCanvas");
-  var p = new Processing(canvas, sketchProc);
-    // Simple way to attach js code to the canvas is by using a function
 
   //var me;
   var openAlready;
   var balls = [];
   var a,b,m,p;
 
+  var p = new Processing(canvas, sketchProc);
+    // Simple way to attach js code to the canvas is by using a function
   function sketchProc(processing) {
     var n                   = 20;
     //var balls               = [];
@@ -18,8 +18,8 @@
       processing.size(1201, 700);
       processing.frameRate(20);
       processing.smooth();
-      balls.push(new Ball(processing.width / 2, processing.height / 2, n, processing));
-      //balls[0] = new Ball( processing.width / 2, processing.height / 2, n, processing );
+      //balls.push(new Ball(processing.width / 2, processing.height / 2, n, processing));
+      balls[0] = new Ball( processing.width / 2, processing.height / 2, n, processing );
       a = processing.width / 2;
       b = processing.height / 2;
       m = n;
@@ -71,14 +71,16 @@
   }
 
   //exports.me = me;
+  console.log(connections);
+
   if(connections != null){
     console.log("im here");
     connections.on('open',function(){
 
       console.log("connections open");
       //balls.push( new Ball( processing.width / 2, processing.height / 2, n, processing)) ;
-      balls.push( new Ball ( a, b, m, p));
-      //balls[1] = new Ball ( a, b, m, p );
+      //balls.push( new Ball ( a, b, m, p));
+      balls[1] = new Ball ( a, b, m, p );
       openAlready = true;
       console.log('ball added');
 
