@@ -1,19 +1,20 @@
+  //(function(){
+
   // Connect to PeerJS, have server assign an ID instead of providing one
   var conn;
+  var c;
   var peer = new Peer({key: '6vs0jb4y7a2zw7b9', debug: true});
   peer.on('open', function(id){
     $('#pid').text(id);
   });
   // Await connections from others
 
-  peer.on('connection',connect);
-
-  function connect(c){
-    conn=c;
+  peer.on('connection',function(conn){
+    //conn = c;
     conn.on('open', function() {
     // Receive messages
       conn.on('data', function(data) {
-       console.log("omg i received", data);
+       console.log("server received", data.a, data.b);
       });
 
       // Send messages
@@ -22,19 +23,30 @@
         b: me.y
       };
       //conn.send(location);
-      conn.send('hello');
-      console.log("i know my location"+" "+me.x+" "+me.y);
+      conn.send(location);
+      //console.log("i know my location" + " " + me.x + " " + me.y);
     });
-  }
+  });
 
 $(document).ready(function() {
     // Conect to a peer
   $('#connect').click(function(){
-    var c = peer.connect($('#rid').val());
+    c = peer.connect($('#rid').val());
 
     c.on('open', function(){
-        connect(c);
+
+      c.on('data',function(data){
+        console.log('client received', data.a, data.b);
+      });
+
+      var position = {
+        a: me.x,
+        b: me.y
+      };
+      c.send(position);
+
     });
+
     c.on('error', function(err){
       alert(err)
     });
@@ -101,3 +113,4 @@ var newArr = arr.map(function (item) {
 
 console.log(newArr);
 */
+//})
