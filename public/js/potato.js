@@ -73,7 +73,7 @@
   //exports.me = me;
   console.log(connections);
 
-  if(connections != null){
+  function onConnection() {
     console.log("im here");
     connections.on('open',function(){
 
@@ -88,8 +88,8 @@
         balls[1].x = data.a;
         balls[1].y = data.b;
       });
-
     });
   }
+  connectionReady(onConnection);
 
 })(this);

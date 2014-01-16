@@ -1,5 +1,15 @@
 (function(exports){
   exports.connections = null;
+  var readyCallback = function () {};
+  exports.connectionReady = function (callback) {
+    readyCallback = callback;
+  };
+
+  function setConnection(conn) {
+    exports.connections = conn;
+    readyCallback();
+  }
+
   // Connect to PeerJS, have server assign an ID instead of providing one
   var conn;
   var c;
@@ -31,7 +41,7 @@
     if(exports.connections){
       return;
     }
-    exports.connections = conn;
+    setConnection(conn);
     //peer.removeListener('connection');
 
     //});
@@ -58,7 +68,7 @@
         return;
       }
       c = peer.connect($('#rid').val());
-      exports.connections = c;
+      setConnection(c);
       //peer.removeListener('connection');
 
       //});
