@@ -1,5 +1,16 @@
 (function(exports){
   exports.connections = null;
+
+  var readyCallback = function(){};
+
+  exports.connectionReady = function(callback){
+    readyCallback = callback;
+  };
+
+  function setConnection(conn){
+    exports.connections = conn;
+    readyCallback();
+  }
   // Connect to PeerJS, have server assign an ID instead of providing one
   var conn;
   var c;
@@ -12,28 +23,13 @@
   peer.on('connection',function(conn){
     //conn = c;
     //conn.on('open', function() {
-    // Receive messages
-    /*
-      conn.on('data', function(data) {
-       console.log("server received", data.a, data.b);
-      });
 
-      // Send messages
-      var location = {
-        a: me.x,
-        b: me.y
-      };
-
-      conn.send(location);
-
-      console.log("i know my location" + " " + me.x + " " + me.y);
-    */
     if(exports.connections){
       return;
     }
-    exports.connections = conn;
+    //exports.connections = conn;
     //peer.removeListener('connection');
-
+    setConnection(conn);
     //});
   });
 
@@ -42,25 +38,13 @@
     $('#connect').click(function(){
     //c.on('open', function(){
 
-      /*
-      c.on('data',function(data){
-        console.log('client received', data.a, data.b);
-      });
-
-      var position = {
-        a: me.x,
-        b: me.y
-      };
-
-      c.send(position);
-      */
       if(exports.connections){
         return;
       }
       c = peer.connect($('#rid').val());
-      exports.connections = c;
+      //exports.connections = c;
       //peer.removeListener('connection');
-
+      setConnection(c);
       //});
 
       c.on('error', function(err){

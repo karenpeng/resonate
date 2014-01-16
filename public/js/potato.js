@@ -71,19 +71,13 @@
   }
 
   //exports.me = me;
-  console.log(connections);
 
-  if(connections != null){
-    console.log("im here");
+  function onConnection(){
     connections.on('open',function(){
-
-      console.log("connections open");
       //balls.push( new Ball( processing.width / 2, processing.height / 2, n, processing)) ;
       //balls.push( new Ball ( a, b, m, p));
       balls[1] = new Ball ( a, b, m, p );
       openAlready = true;
-      console.log('ball added');
-
       connections.on('data',function(data){
         balls[1].x = data.a;
         balls[1].y = data.b;
@@ -91,5 +85,6 @@
 
     });
   }
+  connectionReady(onConnection);
 
 })(this);

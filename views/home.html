@@ -8,9 +8,11 @@
   <body>
 	<button onclick="pitchDetector.startLiveInput()">Sing It!</button>
     <canvas id="myCanvas"></canvas>
-    Your PeerJS id is : <span id="pid"></span><br><br>
-    Connect to peer: <input type="text" id="rid" placeholder="Someone else's id">
-                   <input type="button" value="Connect" id="connect"><br><br>
+    <div>
+      Your PeerJS id is : <span id="pid"></span><br><br>
+      Connect to peer: <input type="text" id="rid" placeholder="Someone else's id">
+                       <input type="button" value="Connect" id="connect"><br><br>
+    </div>
     <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
     <script type="text/javascript" src="/public/js/processing.js"></script>
     <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
