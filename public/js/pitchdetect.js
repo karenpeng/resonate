@@ -86,6 +86,7 @@
     this.buflen = 2048;
     this.buf = new Uint8Array(this.buflen);
     this.requestId = null;
+    this.mediaStreamSource = null;
   }
 
   Detector.prototype.startLiveInput = function () {
@@ -94,7 +95,7 @@
 
   Detector.prototype.gotStream = function (stream) {
     // Create an AudioNode from the stream.
-    var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    mediaStreamSource = audioContext.createMediaStreamSource(stream);
 
     // Connect it to the destination.
     this.analyser = audioContext.createAnalyser();
