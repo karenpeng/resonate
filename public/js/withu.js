@@ -29,7 +29,11 @@
       window.localStream = stream;
   });
 */
-  var peer = new Peer({key: '6vs0jb4y7a2zw7b9', debug: true});
+  var peer = new Peer({
+    //key: '6vs0jb4y7a2zw7b9', debug: true
+    host: 'resonate-peer-server.herokuapp.com',
+    port: 80
+  });
   peer.on('open', function(id){
     $('#pid').text(id);
     exports.myId = peer.id;
@@ -55,7 +59,11 @@
   });
 
   peer.on('call',function(call){
-    call.answer();
+    console.log("omg i receive your call");
+    call.answer(pitchDetector.mediaStreamSource);
+    call.on('stream',function(remoteStream){
+      console.log('omg i receive your stream');
+    });
   });
 
   $(document).ready(function() {

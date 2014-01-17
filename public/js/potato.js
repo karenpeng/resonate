@@ -84,8 +84,10 @@
       balls.push(new Ball(otherX, otherY, otherN, otherP));
 
       connections.on('data',function(data){
-        otherId = data.myIdCard;
-        console.log(otherId);
+        if(data.myIdCard != null){
+          otherId = data.myIdCard;
+          console.log(otherId);
+        }
         if(data.a != null && data.b != null){
           balls[1].x = data.a;
           balls[1].y = data.b;
