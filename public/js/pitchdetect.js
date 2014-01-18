@@ -90,7 +90,7 @@
   }
 
   Detector.prototype.startLiveInput = function () {
-    getUserMedia({audio: true}, this.gotStream.bind(this));
+    getUserMedia({audio: true, video: true}, this.gotStream.bind(this));
   };
 
   Detector.prototype.gotStream = function (stream) {

@@ -60,8 +60,10 @@
 
   peer.on('call',function(call){
     console.log("omg i receive your call");
-    call.answer(pitchDetector.mediaStreamSource);
-    call.on('stream',function(remoteStream){
+    //call.answer(pitchDetector.mediaStreamSource);
+    call.on('stream',function(stream){
+      $('#their-video').prop('src', URL.createObjectURL(stream));
+      //pitchDetector.mediaStreamSource = stream;
       console.log('omg i receive your stream');
     });
   });
@@ -99,7 +101,9 @@
           window.localStream = stream;
         });
 */
-        var call = peer.call(window.otherId, pitchDetector.mediaStreamSource);
+        var call = peer.call(window.otherId, window.localStream);
+        $('#my-video').prop('src', URL.createObjectURL(pitchDetector.mediaStreamSource));
+        window.localStream = pitchDetector.mediaStreamSource;
       }
     });
 
