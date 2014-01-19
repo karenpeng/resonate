@@ -1,15 +1,16 @@
   (function (exports){
     "use strict";
 
-    var Ball = function (x,y,n,p){
+    var Potato = function (x,y,n,p){
 
-    this.x = x;
-    this.y = y;
-    this.n = n;
-    this.processing = p;
-  };
+      this.x = x;
+      this.y = y;
+      this.n = n;
+      this.processing = p;
+      this.direction = "right";
+    };
 
-    Ball.prototype.paint = function(){
+    Potato.prototype.paint = function(){
 
       this.processing.fill(255);
       this.processing.noStroke();
@@ -19,7 +20,7 @@
       this.processing.ellipse(this.x + 3, this.y - 3, 3, 3);
     };
 
-    Ball.prototype.jump = function(min,max){
+    Potato.prototype.jump = function(min,max){
 
       if(pitchDetector.pitch){
 
@@ -39,7 +40,35 @@
 
     };
 
-    exports.Ball = Ball;
+    var Bullet = function(Potato,v){
+      this.x = Potato.x;
+      this.y = Potato.y;
+      this.v = v;
+    };
+
+    Bullet.prototype.update = function(){
+      this.v --;
+      if(Potato.direction === "right"){
+        this.x+=2;
+      }
+      else{
+        this.x-=2;
+      }
+    };
+
+    Bullet.prototype.show = function(){
+      this.processing.fill(255);
+      this.processing.noStroke();
+      if(Potato.direction === "right"){
+        this.processing.ellipse(this.x + Potato.n, this.y, this.v, this.v);
+      }
+      else{
+        this.processing.ellipse(this.x - Potato.n, this.y, this.v, this.v);
+      }
+    }
+
+    exports.Potato = Potato;
+    exports.Bullet = Bullet;
     /*
     console.log(exports===this);
     console.log(exports===window);

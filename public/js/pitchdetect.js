@@ -87,13 +87,18 @@
     this.buf = new Uint8Array(this.buflen);
     this.requestId = null;
     this.mediaStreamSource = null;
+    this.audioStream = null;
+    this.volume = null;
   }
 
   Detector.prototype.startLiveInput = function () {
-    getUserMedia({audio: true, video: true}, this.gotStream.bind(this));
+    getUserMedia({audio: true}, this.gotStream.bind(this));
   };
 
   Detector.prototype.gotStream = function (stream) {
+    //make it for the peer call
+    this.audioStream = stream;
+    this.volume = stream.value;
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
 
@@ -102,6 +107,7 @@
     this.analyser.fftSize = 2048;
     mediaStreamSource.connect(this.analyser);
     this.updatePitch();
+    //console.log(this.volume);
   };
 
   Detector.prototype.updatePitch = function () {
