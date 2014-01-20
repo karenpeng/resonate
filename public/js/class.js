@@ -45,6 +45,7 @@
       this.x = x;
       this.y = y;
       this.processing = p;
+      this.life = 100;
     };
 
     Bullet.prototype.update = function(string, v){
@@ -56,6 +57,7 @@
         this.x-=2;
       }
       this.v = v;
+      this.life --;
     };
 
     Bullet.prototype.shoot = function(x, y){

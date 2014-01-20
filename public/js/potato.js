@@ -54,12 +54,12 @@
           prePosition[1] = potatoes[0].y;
         }
 
-        connectFrameCounter++；
+        connectFrameCounter ++;
       }
 
       if( connectFrameCounter != 0 && connectFrameCounter % 100 === 0 ){
-        var monsterX = processing.map( processing.sin(clock), 0, 1, 0, processing.width );
-        var monsterY = processing.map( processing.cos(clock), 0, 1, 0, processing.height );
+        var monsterX = processing.map( processing.sin(connectFrameCounter), 0, 1, 0, processing.width );
+        var monsterY = processing.map( processing.cos(connectFrameCounter  ), 0, 1, 0, processing.height );
         monsters.push(new Monster( monsterX, monsterY, 30, processing));
       }
       monsters.forEach(function(item){
@@ -74,7 +74,7 @@
       })
 
       if(iAmShooting){
-        if(shootCounter % 10 == 0){
+        if(shootCounter % 4 == 0){
           myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing));
           if(connectAlready){
             //how many bullets are here?
@@ -103,17 +103,17 @@
 
 
       for(var n=0; n<myBullets.length; n++){
-        if(myBullets[n].v < 1){
+        if(myBullets[n].v < 1 || myBullets[n].x < 0 || myBullets[n].x > processing.width || myBullets[n].life < 0){
           myBullets.splice(n,1);
         }
       }
       for(var o=0; o<hisBullets.length; o++){
-        if(hisBullets[o].v < 1){
+        if(hisBullets[o].v < 1 || hisBullets[o].x < 0 || hisBullets[o].x > processing.width || hisBullets[o].life < 0){
           hisBullets.splice(o,1);
         }
       }
       for(var p=0; p<monsters.length; p++){
-        if(monsters[p].power <= 0){
+        if(monsters[p].power <= 0 || monsters[p].x < 0 || monsters[p].x > processing.width){
           monsters.splice(p,1);
         }
       }
