@@ -86,9 +86,9 @@
       this.processing = p;
     };
 
-    Monster.prototype.fly = function(){
-      this.x += Math.random() * 2 - 2;
-      this.y += Math.random() * 2 - 1;
+    Monster.prototype.fly = function(randomX, randomY){
+      this.x += randomX;
+      this.y += randomY;
     };
 
     Monster.prototype.fight = function(x, y){

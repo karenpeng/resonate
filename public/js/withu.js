@@ -21,6 +21,7 @@
   exports.mediaStream = null;
   exports.iAmShooting = null;
   var counter = 0;
+  var ifHeIsShooting = false;
 
   var peer = new Peer({
     host: 'resonate-peer-server.herokuapp.com',
@@ -48,24 +49,30 @@
       var initPosition = {
         initX: potatoes[0].x,
         initY: potatoes[0].y
-      }
+      };
       exports.connections.send(initPosition);
 
       exports.connections.on('data',function(data){
 
-        if(counter === 0 && data.initX != null && data.initY != null){
+        if(counter === 0 && data.initX !== undefined && data.initY !== undefined){
           potatoes.push(new Potato(data.initX, data.initY, otherN, otherP));
           counter = 1;
         }
 
-        if(data.potatoX != null && data.potatoY != null && data.potatoDirection != null){
+        if(data.potatoX !== undefined && data.potatoY !== undefined && data.potatoDirection !== undefined){
           potatoes[1].x = data.potatoX;
           potatoes[1].y = data.potatoY;
           potatoes[1].direction = data.potatoDirection;
         }
-        if(data.bulletX != null && data.bulletY != null){
+        if(data.bulletX !== undefined && data.bulletY !== undefined){
           hisBullets.push( new Bullet(data.bulletX, data.bulletY, otherP));
         }
+
+        if(data.heShoots !== undefined){
+          ifHeIsShooting = data.heShoots;
+          console.log(ifHeIsShooting);
+        }
+
       });
 
     });
@@ -81,9 +88,13 @@
 
     call.answer(pitchDetector.audioStream);
     call.on('stream',function(stream){
-      if(0===0){
+      if(ifHeIsShooting){
+        console.log("ok");
         $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
-        console.log('omg i display your stream');
+      }
+      else{
+        console.log('waht?');
+        $('#somebodyVoice').prop();
       }
     });
   });
@@ -102,7 +113,7 @@
       var call = peer.call($('#rid').val(), pitchDetector.audioStream);
 
       c.on('error', function(err){
-        alert(err)
+        alert(err);
       });
     });
 
@@ -110,14 +121,26 @@
       if(event.which === 32 ){
         event.preventDefault();
         exports.iAmShooting = true;
+        if(connectAlready){
+          var heIsShooting = {
+            heShoots: exports.iAmShooting
+          };
+          exports.connections.send(heIsShooting);
+        }
       }
     });
 
     $(window).keyup(function(event){
       exports.iAmShooting = false;
+      if(connectAlready){
+        var heIsShooting = {
+          heShoots: exports.iAmShooting
+        };
+        exports.connections.send(heIsShooting);
+      }
     });
 
   });
 
 //exports.iAmShooting = iAmShooting;
-})(this)
+})(this);

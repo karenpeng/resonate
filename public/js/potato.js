@@ -48,7 +48,7 @@
             potatoX: potatoes[0].x,
             potatoY: potatoes[0].y,
             potatoDirection: potatoes[0].direction
-          }
+          };
           connections.send(potatoInfo);
           prePosition[0] = potatoes[0].x;
           prePosition[1] = potatoes[0].y;
@@ -57,13 +57,13 @@
         connectFrameCounter ++;
       }
 
-      if( connectFrameCounter != 0 && connectFrameCounter % 100 === 0 ){
-        var monsterX = processing.map( processing.sin(connectFrameCounter), 0, 1, 0, processing.width );
-        var monsterY = processing.map( processing.cos(connectFrameCounter  ), 0, 1, 0, processing.height );
+      if( connectFrameCounter !== 0 && connectFrameCounter % 100 === 0 ){
+        var monsterX = processing.map( Math.cos(connectFrameCounter), 0, 1, 0, processing.width );
+        var monsterY = processing.map( Math.sin(connectFrameCounter), 0, 1, 0, processing.height );
         monsters.push(new Monster( monsterX, monsterY, 30, processing));
       }
       monsters.forEach(function(item){
-        item.fly();
+        item.fly(Math.cos(connectFrameCounter) * 2 - 1, Math.sin(connectFrameCounter) * 2 );
         for(var i=0; i< myBullets.length; i++){
           item.fight(myBullets[i].x, myBullets[i].y);
         }
@@ -71,10 +71,10 @@
           item.fight(hisBullets[j].x, hisBullets[j].y);
         }
         item.display();
-      })
+      });
 
       if(iAmShooting){
-        if(shootCounter % 4 == 0){
+        if(shootCounter % 4 === 0){
           myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing));
           if(connectAlready){
             //how many bullets are here?
@@ -103,22 +103,22 @@
 
 
       for(var n=0; n<myBullets.length; n++){
-        if(myBullets[n].v < 1 || myBullets[n].x < 0 || myBullets[n].x > processing.width || myBullets[n].life < 0){
+        if(myBullets[n].v < 1 || myBullets[n].x < -myBullets[n].v/2 || myBullets[n].x > processing.width + myBullets[n].v/2 || myBullets[n].life < 0){
           myBullets.splice(n,1);
         }
       }
       for(var o=0; o<hisBullets.length; o++){
-        if(hisBullets[o].v < 1 || hisBullets[o].x < 0 || hisBullets[o].x > processing.width || hisBullets[o].life < 0){
+        if(hisBullets[o].v < 1 || hisBullets[o].x < - hisBullets[o].v/2 || hisBullets[o].x > processing.width + hisBullets[o].v/2 || hisBullets[o].life < 0){
           hisBullets.splice(o,1);
         }
       }
       for(var p=0; p<monsters.length; p++){
-        if(monsters[p].power <= 0 || monsters[p].x < 0 || monsters[p].x > processing.width){
+        if(monsters[p].power <= 0 || monsters[p].x < - monsters[p].power/2 || monsters[p].x > processing.width + monsters[p].power/2){
           monsters.splice(p,1);
         }
       }
 
-	  };
+    };
 
     processing.mousePressed = function(){
       var disX = processing.mouseX - potatoes[0].x;
