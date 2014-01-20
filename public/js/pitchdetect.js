@@ -98,7 +98,7 @@
   Detector.prototype.gotStream = function (stream) {
     //make it for the peer call
     this.audioStream = stream;
-    this.volume = stream.value;
+    //this.volume = stream.value;
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
 

@@ -19,7 +19,8 @@
   exports.myId = null;
   exports.otherId = null;
   exports.mediaStream = null;
-  var ifIAmShooting;
+  exports.iAmShooting = null;
+  var counter = 0;
 
   var peer = new Peer({
     host: 'resonate-peer-server.herokuapp.com',
@@ -44,13 +45,26 @@
 
       connectAlready = true;
 
-      potatoes.push(new Potato(otherX, otherY, otherN, otherP));
+      var initPosition = {
+        initX: potatoes[0].x,
+        initY: potatoes[0].y
+      }
+      exports.connections.send(initPosition);
 
-      connections.on('data',function(data){
+      exports.connections.on('data',function(data){
 
-        if(data.a != null && data.b != null){
-          potatoes[1].x = data.a;
-          potatoes[1].y = data.b;
+        if(counter === 0 && data.initX != null && data.initY != null){
+          potatoes.push(new Potato(data.initX, data.initY, otherN, otherP));
+          counter = 1;
+        }
+
+        if(data.potatoX != null && data.potatoY != null && data.potatoDirection != null){
+          potatoes[1].x = data.potatoX;
+          potatoes[1].y = data.potatoY;
+          potatoes[1].direction = data.potatoDirection;
+        }
+        if(data.bulletX != null && data.bulletY != null){
+          hisBullets.push( new Bullet(data.bulletX, data.bulletY, otherP));
         }
       });
 
@@ -95,12 +109,15 @@
     $(window).keypress(function(event){
       if(event.which === 32 ){
         event.preventDefault();
-        ifIAmShooting = true;
+        exports.iAmShooting = true;
       }
     });
 
+    $(window).keyup(function(event){
+      exports.iAmShooting = false;
+    });
 
   });
 
-
+//exports.iAmShooting = iAmShooting;
 })(this)

@@ -1,7 +1,7 @@
   (function (exports){
     "use strict";
 
-    var Potato = function (x,y,n,p){
+    var Potato = function (x, y, n, p){
 
       this.x = x;
       this.y = y;
@@ -10,17 +10,7 @@
       this.direction = "right";
     };
 
-    Potato.prototype.paint = function(){
-
-      this.processing.fill(255);
-      this.processing.noStroke();
-      this.processing.ellipse(this.x,this.y,this.n,this.n);
-      this.processing.fill(0);
-      this.processing.ellipse(this.x - 3, this.y - 3, 3, 3);
-      this.processing.ellipse(this.x + 3, this.y - 3, 3, 3);
-    };
-
-    Potato.prototype.jump = function(min,max){
+    Potato.prototype.jump = function(min, max){
 
       if(pitchDetector.pitch){
 
@@ -40,35 +30,82 @@
 
     };
 
-    var Bullet = function(Potato,v){
-      this.x = Potato.x;
-      this.y = Potato.y;
-      this.v = v;
+    Potato.prototype.paint = function(){
+
+      this.processing.fill(255);
+      this.processing.noStroke();
+      this.processing.ellipse(this.x,this.y,this.n,this.n);
+      this.processing.fill(0);
+      this.processing.ellipse(this.x - 3, this.y - 3, 3, 3);
+      this.processing.ellipse(this.x + 3, this.y - 3, 3, 3);
     };
 
-    Bullet.prototype.update = function(){
-      this.v --;
-      if(Potato.direction === "right"){
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var Bullet = function(x, y, p){
+      this.x = x;
+      this.y = y;
+      this.processing = p;
+    };
+
+    Bullet.prototype.update = function(string, v){
+      //this.v --;
+      if(string === "right"){
         this.x+=2;
       }
       else{
         this.x-=2;
       }
+      this.v = v;
     };
 
-    Bullet.prototype.show = function(){
+    Bullet.prototype.shoot = function(x, y){
+      var bulletCheck = this.processing.dist(this.x, this.y, x, y);
+      if(bulletCheck < 2){
+        this.v = 0;
+      }
+    };
+
+    Bullet.prototype.show = function(string){
       this.processing.fill(255);
       this.processing.noStroke();
-      if(Potato.direction === "right"){
-        this.processing.ellipse(this.x + Potato.n, this.y, this.v, this.v);
+      if(string === "right"){
+        this.processing.ellipse(this.x + 10, this.y, this.v, this.v);
       }
       else{
-        this.processing.ellipse(this.x - Potato.n, this.y, this.v, this.v);
+        this.processing.ellipse(this.x - 10, this.y, this.v, this.v);
       }
+    };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var Monster = function(x, y, power, p){
+      this.x = x;
+      this.y = y;
+      this.power = power;
+      this.processing = p;
+    };
+
+    Monster.prototype.fly = function(){
+      this.x += Math.random() * 2 - 2;
+      this.y += Math.random() * 2 - 1;
+    };
+
+    Monster.prototype.fight = function(x, y){
+      var bulletCheck = this.processing.dist(this.x, this.y, x, y);
+      if(bulletCheck < 2){
+        power --;
+      }
+    };
+
+    Monster.prototype.display = function(){
+      this.processing.fill(255);
+      this.processing.noStroke();
+      this.processing.ellipse(this.x, this.y, this.power, this.power);
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports.Potato = Potato;
     exports.Bullet = Bullet;
+    exports.Monster = Monster;
     /*
     console.log(exports===this);
     console.log(exports===window);
