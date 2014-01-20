@@ -7,7 +7,7 @@
       this.y = y;
       this.n = n;
       this.processing = p;
-      this.direction = "right";
+      this.direction = 'right';
     };
 
     Potato.prototype.jump = function(min, max){
@@ -50,7 +50,7 @@
 
     Bullet.prototype.update = function(string, v){
       //this.v --;
-      if(string === "right"){
+      if(string === 'right'){
         this.x+=2;
       }
       else{
@@ -70,7 +70,7 @@
     Bullet.prototype.show = function(string){
       this.processing.fill(255);
       this.processing.noStroke();
-      if(string === "right"){
+      if(string === 'right'){
         this.processing.ellipse(this.x + 10, this.y, this.v, this.v);
       }
       else{
@@ -102,7 +102,7 @@
       this.processing.fill(255);
       this.processing.noStroke();
       this.processing.ellipse(this.x, this.y, this.power, this.power);
-    }
+    };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
     exports.Potato = Potato;

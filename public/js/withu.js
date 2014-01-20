@@ -23,6 +23,17 @@
   var counter = 0;
   var ifHeIsShooting = false;
 
+  var sendWithType = function (type, data) {
+    if(!exports.connections){
+      console.warn('do not init connection');
+      return;
+    }
+    exports.connections.send({
+      type: type,
+      data: data
+    });
+  };
+
   var peer = new Peer({
     host: 'resonate-peer-server.herokuapp.com',
     port: 80
@@ -46,14 +57,42 @@
 
       connectAlready = true;
 
-      var initPosition = {
+      var initPositionData = {
         initX: potatoes[0].x,
         initY: potatoes[0].y
       };
-      exports.connections.send(initPosition);
+      sendWithType('initPosition', initPositionData);
 
-      exports.connections.on('data',function(data){
+      exports.connections.on('data',function(message){
 
+        switch(message.type){
+          case 'initPosition':
+            if(counter === 0){
+              potatoes.push(new Potato(message.data.initX, message.data.initY, otherN, otherP));
+              counter = 1;
+            }
+            break;
+
+          case 'potatoInfo':
+            potatoes[1].x = message.data.potatoX;
+            potatoes[1].y = message.data.potatoY;
+            potatoes[1].direction = message.data.potatoDirection;
+            break;
+
+          case 'bulletInfo':
+            hisBullets.push( new Bullet(message.data.bulletX, message.data.bulletY, otherP));
+            break;
+
+          case 'heIsShooting':
+            ifHeIsShooting = message.data.heShoots;
+            console.log(ifHeIsShooting);
+            break;
+
+          default:
+            console.log('unknow message type:', message.type);
+        }
+
+/*
         if(counter === 0 && data.initX !== undefined && data.initY !== undefined){
           potatoes.push(new Potato(data.initX, data.initY, otherN, otherP));
           counter = 1;
@@ -72,7 +111,7 @@
           ifHeIsShooting = data.heShoots;
           console.log(ifHeIsShooting);
         }
-
+*/
       });
 
     });
@@ -122,10 +161,10 @@
         event.preventDefault();
         exports.iAmShooting = true;
         if(connectAlready){
-          var heIsShooting = {
+          var heIsShootingData = {
             heShoots: exports.iAmShooting
           };
-          exports.connections.send(heIsShooting);
+          sendWithType('heIsShooting', heIsShootingData);
         }
       }
     });
@@ -133,14 +172,15 @@
     $(window).keyup(function(event){
       exports.iAmShooting = false;
       if(connectAlready){
-        var heIsShooting = {
-          heShoots: exports.iAmShooting
-        };
-        exports.connections.send(heIsShooting);
+          var heIsShootingData = {
+            heShoots: exports.iAmShooting
+          };
+          sendWithType('heIsShooting', heIsShootingData);
       }
     });
 
   });
 
 //exports.iAmShooting = iAmShooting;
+exports.sendWithType = sendWithType;
 })(this);

@@ -44,12 +44,12 @@
       if(exports.connectAlready){
 
         if( processing.dist( prePosition[0], prePosition[1], potatoes[0].x, potatoes[0].y ) > 6 ){
-          var potatoInfo = {
+          var potatoInfoData = {
             potatoX: potatoes[0].x,
             potatoY: potatoes[0].y,
             potatoDirection: potatoes[0].direction
           };
-          connections.send(potatoInfo);
+          sendWithType('potatoInfo', potatoInfoData);
           prePosition[0] = potatoes[0].x;
           prePosition[1] = potatoes[0].y;
         }
@@ -78,8 +78,11 @@
           myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing));
           if(connectAlready){
             //how many bullets are here?
-            var bulletInfo = { bulletX:potatoes[0].x , bulletY:potatoes[0].y };
-            connections.send(bulletInfo);
+            var bulletInfoData = {
+              bulletX:potatoes[0].x,
+              bulletY:potatoes[0].y
+            };
+            sendWithType('bulletInfo', bulletInfoData);
           }
         }
         shootCounter++;
@@ -123,10 +126,10 @@
     processing.mousePressed = function(){
       var disX = processing.mouseX - potatoes[0].x;
       if(disX < 0){
-        potatoes[0].direction = "left";
+        potatoes[0].direction = 'left';
       }
       else{
-        potatoes[0].direction = "right";
+        potatoes[0].direction = 'right';
       }
       potatoes[0].x += disX * 0.1;
     };
