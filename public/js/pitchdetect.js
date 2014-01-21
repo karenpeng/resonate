@@ -98,7 +98,8 @@
   Detector.prototype.gotStream = function (stream) {
     //make it for the peer call
     this.audioStream = stream;
-    //this.volume = stream.value;
+    //will this be volume:
+    //this.volume = stream.gain.value;
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
 
@@ -107,7 +108,6 @@
     this.analyser.fftSize = 2048;
     mediaStreamSource.connect(this.analyser);
     this.updatePitch();
-    //console.log(this.volume);
   };
 
   Detector.prototype.updatePitch = function () {

@@ -1,5 +1,5 @@
   (function (exports){
-    "use strict";
+    'use strict';
 
     var Potato = function (x, y, n, p){
 

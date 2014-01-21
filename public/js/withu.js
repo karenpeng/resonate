@@ -1,8 +1,14 @@
 (function(exports){
+  var conn;
+  var c;
   exports.connections = null;
+  exports.mediaStream = null;
+  exports.connectAlready = false;
+  exports.iAmShooting = false;
 
-  pitchDetector.startLiveInput();
-
+  var counter = 0;
+  var keyCounter = 0;
+  var hisVoice = document.getElementById("somebodyVoice");
   var readyCallback = function(){};
 
   exports.connectionReady = function(callback){
@@ -13,15 +19,6 @@
     exports.connections = conn;
     readyCallback();
   }
-
-  var conn;
-  var c;
-  exports.myId = null;
-  exports.otherId = null;
-  exports.mediaStream = null;
-  exports.iAmShooting = null;
-  var counter = 0;
-  var ifHeIsShooting = false;
 
   var sendWithType = function (type, data) {
     if(!exports.connections){
@@ -38,24 +35,16 @@
     host: 'resonate-peer-server.herokuapp.com',
     port: 80
   });
+
   peer.on('open', function(id){
     $('#pid').text(id);
     exports.myId = peer.id;
   });
 
-
-  peer.on('connection',function(conn){
-    if(exports.connections){
-      return;
-    }
-    //peer.removeListener('connection');
-    setConnection(conn);
-  });
-
   function onConnection(){
     exports.connections.on('open',function(){
 
-      connectAlready = true;
+      exports.connectAlready = true;
 
       var initPositionData = {
         initX: potatoes[0].x,
@@ -84,34 +73,20 @@
             break;
 
           case 'heIsShooting':
-            ifHeIsShooting = message.data.heShoots;
-            console.log(ifHeIsShooting);
+            if(message.data.heShoots){
+              console.log("play");
+              hisVoice.play();
+            }
+            else{
+              console.log("pause");
+              hisVoice.pause();
+            }
             break;
 
           default:
             console.log('unknow message type:', message.type);
         }
 
-/*
-        if(counter === 0 && data.initX !== undefined && data.initY !== undefined){
-          potatoes.push(new Potato(data.initX, data.initY, otherN, otherP));
-          counter = 1;
-        }
-
-        if(data.potatoX !== undefined && data.potatoY !== undefined && data.potatoDirection !== undefined){
-          potatoes[1].x = data.potatoX;
-          potatoes[1].y = data.potatoY;
-          potatoes[1].direction = data.potatoDirection;
-        }
-        if(data.bulletX !== undefined && data.bulletY !== undefined){
-          hisBullets.push( new Bullet(data.bulletX, data.bulletY, otherP));
-        }
-
-        if(data.heShoots !== undefined){
-          ifHeIsShooting = data.heShoots;
-          console.log(ifHeIsShooting);
-        }
-*/
       });
 
     });
@@ -119,29 +94,28 @@
   connectionReady(onConnection);
 
 
+  peer.on('connection',function(conn){
+    if(exports.connections){
+      return;
+    }
+    //peer.removeListener('connection');
+    setConnection(conn);
+  });
+
   peer.on('error', function(err){
       alert(err.message);
   });
 
   peer.on('call',function(call){
-
     call.answer(pitchDetector.audioStream);
     call.on('stream',function(stream){
-      if(ifHeIsShooting){
-        console.log("ok");
-        $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
-      }
-      else{
-        console.log('waht?');
-        $('#somebodyVoice').prop();
-      }
+      $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
     });
   });
 
   $(document).ready(function() {
 
     $('#connect').click(function(){
-
       if(exports.connections){
         return;
       }
@@ -154,33 +128,35 @@
       c.on('error', function(err){
         alert(err);
       });
+
     });
 
-    $(window).keypress(function(event){
-      if(event.which === 32 ){
-        event.preventDefault();
-        exports.iAmShooting = true;
-        if(connectAlready){
+    $(window).keydown(function(event){
+        if(event.which === 32 ){
+          keyCounter ++;
+          event.preventDefault();
+          exports.iAmShooting = true;
+          if(exports.connectAlready && keyCounter < 2 ){
+            var heIsShootingData = {
+              heShoots: exports.iAmShooting
+            };
+            sendWithType('heIsShooting', heIsShootingData);
+          }
+        }
+    });
+
+    $(window).keyup(function(event){
+        exports.iAmShooting = false;
+        keyCounter = 0;
+        if(exports.connectAlready){
           var heIsShootingData = {
             heShoots: exports.iAmShooting
           };
           sendWithType('heIsShooting', heIsShootingData);
         }
-      }
-    });
-
-    $(window).keyup(function(event){
-      exports.iAmShooting = false;
-      if(connectAlready){
-          var heIsShootingData = {
-            heShoots: exports.iAmShooting
-          };
-          sendWithType('heIsShooting', heIsShootingData);
-      }
     });
 
   });
 
-//exports.iAmShooting = iAmShooting;
 exports.sendWithType = sendWithType;
 })(this);

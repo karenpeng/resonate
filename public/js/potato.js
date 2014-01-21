@@ -1,7 +1,7 @@
 (function (exports) {
-  var canvas = document.getElementById("myCanvas");
+  pitchDetector.startLiveInput();
 
-  exports.connectAlready = null;
+  var canvas = document.getElementById("myCanvas");
   var potatoes = [];
   var otherN, otherP;
   var myBullets  = [];
@@ -41,7 +41,7 @@
         item.paint();
       });
 
-      if(exports.connectAlready){
+      if(connectAlready){
 
         if( processing.dist( prePosition[0], prePosition[1], potatoes[0].x, potatoes[0].y ) > 6 ){
           var potatoInfoData = {
@@ -124,6 +124,7 @@
     };
 
     processing.mousePressed = function(){
+      console.log(pitchDetector.volume);
       var disX = processing.mouseX - potatoes[0].x;
       if(disX < 0){
         potatoes[0].direction = 'left';
@@ -136,7 +137,6 @@
 
   }
 
-  exports.connectAlready = connectAlready;
   exports.potatoes = potatoes;
   exports.otherN = otherN;
   exports.otherP = otherP;
