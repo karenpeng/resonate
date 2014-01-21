@@ -74,13 +74,16 @@
       });
 
       if(iAmShooting){
+        //console.log(pitchDetector.getAverageVolume());
+        var myVolume = processing.map(pitchDetector.getAverageVolume(), 125, 130, 1, 20);
         if(shootCounter % 4 === 0){
-          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing));
+          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing, myVolume));
           if(connectAlready){
             //how many bullets are here?
             var bulletInfoData = {
               bulletX:potatoes[0].x,
-              bulletY:potatoes[0].y
+              bulletY:potatoes[0].y,
+              bulletVolume:myVolume
             };
             sendWithType('bulletInfo', bulletInfoData);
           }
@@ -89,7 +92,8 @@
       }
 
       myBullets.forEach(function(item){
-        item.update(potatoes[0].direction, Math.random()*2+4);
+
+        item.update(potatoes[0].direction);
         for(var k=0; k< monsters.length; k++){
           item.shoot(monsters[k].x, monsters[k].y);
         }
@@ -97,7 +101,7 @@
       });
 
       hisBullets.forEach(function(item){
-        item.update(potatoes[1].direction, Math.random()*4+4);
+        item.update(potatoes[1].direction);
         for(var m=0; m< monsters.length; m++){
           item.shoot(monsters[m].x, monsters[m].y);
         }
@@ -124,7 +128,7 @@
     };
 
     processing.mousePressed = function(){
-      console.log(pitchDetector.volume);
+      console.log(pitchDetector.buf);
       var disX = processing.mouseX - potatoes[0].x;
       if(disX < 0){
         potatoes[0].direction = 'left';

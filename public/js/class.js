@@ -41,22 +41,22 @@
     };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    var Bullet = function(x, y, p){
+    var Bullet = function(x, y, p, v){
       this.x = x;
       this.y = y;
       this.processing = p;
       this.life = 100;
+      this.v = v;
     };
 
-    Bullet.prototype.update = function(string, v){
+    Bullet.prototype.update = function(string){
       //this.v --;
       if(string === 'right'){
-        this.x+=2;
+        this.x+=8;
       }
       else{
-        this.x-=2;
+        this.x-=8;
       }
-      this.v = v;
       this.life --;
     };
 
@@ -93,8 +93,8 @@
 
     Monster.prototype.fight = function(x, y){
       var bulletCheck = this.processing.dist(this.x, this.y, x, y);
-      if(bulletCheck < 2){
-        power --;
+      if(bulletCheck < 10){
+        power -= 4;
       }
     };
 
