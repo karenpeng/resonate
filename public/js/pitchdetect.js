@@ -77,12 +77,6 @@
   //        var best_frequency = sampleRate/best_offset;
   }
 
-  function startLiveInput(){
-    getUserMedia({audio: true});
-  }
-
-  startLiveInput();
-
   function Detector() {
     this.pitch;
     this.note;
@@ -98,7 +92,7 @@
 
   Detector.prototype.gotStream = function (stream) {
     //make it for the peer call
-    this.audioStream = stream;
+    //this.audioStream = stream;
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
     // Connect it to the destination.
@@ -119,6 +113,7 @@
       this.noteString = NOTE_STRINGS[this.note % 12];
     }
     requestAnimationFrame(this.updatePitch.bind(this));
+    console.log(this.pitch);
   };
 
   function Checker() {
@@ -169,5 +164,11 @@
 
   exports.pitchDetector = new Detector();
   exports.volumeChecker = new Checker();
+
+  getUserMedia({audio:true},function(stream){
+    exports.pitchDetector.gotStream(stream);
+    exports.volumeChecker.gotStream(stream);
+    exports.audioStream = stream;
+  });
 
 })(this);

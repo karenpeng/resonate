@@ -1,4 +1,5 @@
 (function (exports) {
+  //pitchDetector.startLiveInput();
 
   var canvas = document.getElementById("myCanvas");
   var potatoes = [];
