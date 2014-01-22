@@ -17,7 +17,7 @@
         var heit;
 
         if(pitchDetector.pitch === 11025){
-         heit = this.processing.height / 2;
+         heit = this.processing.height - 40;
         }
         else{
          heit = this.processing.map(pitchDetector.pitch, min, max, this.processing.height - this.n, this.n);
@@ -41,21 +41,22 @@
     };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    var Bullet = function(x, y, p, v){
+    var Bullet = function(x, y, p, v, direction){
       this.x = x;
       this.y = y;
       this.processing = p;
-      this.life = 100;
+      this.life = 80;
       this.v = v;
+      this.direction = direction;
     };
 
-    Bullet.prototype.update = function(string){
+    Bullet.prototype.update = function(){
       //this.v --;
-      if(string === 'right'){
-        this.x+=8;
+      if(this.direction === 'right'){
+        this.x += 12;
       }
       else{
-        this.x-=8;
+        this.x -= 12;
       }
       this.life --;
     };

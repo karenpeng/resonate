@@ -1,5 +1,4 @@
 (function (exports) {
-  pitchDetector.startLiveInput();
 
   var canvas = document.getElementById("myCanvas");
   var potatoes = [];
@@ -21,7 +20,7 @@
       processing.size(1201, 700);
       processing.frameRate(20);
       processing.smooth();
-      potatoes.push(new Potato(processing.width / 2, processing.height / 2, n, processing));
+      potatoes.push(new Potato(processing.width / 2, processing.height - 40, n, processing));
       //potatoes[0] = new Potato( processing.width / 2, processing.height / 2, n, processing );
       otherN = n;
       otherP = processing;
@@ -34,7 +33,7 @@
 
       processing.background(0);
       processing.stroke(255);
-      processing.line(0, processing.height / 2, processing.width, processing.height / 2);
+      processing.line(0, processing.height - 40, processing.width, processing.height - 40);
 
       potatoes[0].jump(40, 500);
       potatoes.forEach(function(item){
@@ -60,7 +59,7 @@
       if( connectFrameCounter !== 0 && connectFrameCounter % 100 === 0 ){
         var monsterX = processing.map( Math.cos(connectFrameCounter), 0, 1, 0, processing.width );
         var monsterY = processing.map( Math.sin(connectFrameCounter), 0, 1, 0, processing.height );
-        monsters.push(new Monster( monsterX, monsterY, 30, processing));
+        monsters.push(new Monster( monsterX, monsterY, 70, processing));
       }
       monsters.forEach(function(item){
         item.fly(Math.cos(connectFrameCounter) * 2 - 1, Math.sin(connectFrameCounter) * 2 );
@@ -75,15 +74,16 @@
 
       if(iAmShooting){
         //console.log(pitchDetector.getAverageVolume());
-        var myVolume = processing.map(pitchDetector.getAverageVolume(), 125, 130, 1, 20);
+        var myVolume = processing.map(volumeChecker.getAverageVolume(), 125, 130, 1, 20);
         if(shootCounter % 4 === 0){
-          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing, myVolume));
+          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing, myVolume, potatoes[0].direction));
           if(connectAlready){
             //how many bullets are here?
             var bulletInfoData = {
               bulletX:potatoes[0].x,
               bulletY:potatoes[0].y,
-              bulletVolume:myVolume
+              bulletVolume:myVolume,
+              bulletDirection:potatoes[0].direction
             };
             sendWithType('bulletInfo', bulletInfoData);
           }
@@ -93,7 +93,7 @@
 
       myBullets.forEach(function(item){
 
-        item.update(potatoes[0].direction);
+        item.update();
         for(var k=0; k< monsters.length; k++){
           item.shoot(monsters[k].x, monsters[k].y);
         }
@@ -128,7 +128,7 @@
     };
 
     processing.mousePressed = function(){
-      console.log(pitchDetector.buf);
+      console.log(pitchDetector.minBuf);
       var disX = processing.mouseX - potatoes[0].x;
       if(disX < 0){
         potatoes[0].direction = 'left';

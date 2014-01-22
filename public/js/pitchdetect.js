@@ -77,6 +77,12 @@
   //        var best_frequency = sampleRate/best_offset;
   }
 
+  function startLiveInput(){
+    getUserMedia({audio: true});
+  }
+
+  startLiveInput();
+
   function Detector() {
     this.pitch;
     this.note;
@@ -88,33 +94,18 @@
     this.requestId = null;
     this.mediaStreamSource = null;
     this.audioStream = null;
-    this.volume = null;
   }
-
-  Detector.prototype.startLiveInput = function () {
-    getUserMedia({audio: true}, this.gotStream.bind(this));
-  };
 
   Detector.prototype.gotStream = function (stream) {
     //make it for the peer call
     this.audioStream = stream;
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
-
     // Connect it to the destination.
     this.analyser = audioContext.createAnalyser();
     this.analyser.fftSize = 2048;
     mediaStreamSource.connect(this.analyser);
     this.updatePitch();
-  };
-
-  Detector.prototype.getAverageVolume = function(){
-    var value = 0;
-    for(var i = 0; i< this.buf.length; i++){
-      value += this.buf[i];
-    }
-    this.volume = value / this.buf.length;
-    return this.volume;
   };
 
   Detector.prototype.updatePitch = function () {
@@ -130,5 +121,53 @@
     requestAnimationFrame(this.updatePitch.bind(this));
   };
 
+  function Checker() {
+    this.pitch;
+    this.note;
+    this.noteString = '';
+    this.detune = 0;
+    this.analyser = null;
+    this.buflen = 64;
+    this.buf = new Uint8Array(this.buflen);
+    this.requestId = null;
+    this.mediaStreamSource = null;
+    this.audioStream = null;
+    this.volume = null;
+  }
+
+  Checker.prototype.gotStream = function (stream) {
+    // Create an AudioNode from the stream.
+    mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    // Connect it to the destination.
+    this.analyser = audioContext.createAnalyser();
+    this.analyser.fftSize = 2048;
+    mediaStreamSource.connect(this.analyser);
+    this.updatePitch();
+  };
+
+  Checker.prototype.getAverageVolume = function(){
+    var value = 0;
+    for(var i = 0; i< this.buf.length; i++){
+      value += this.buf[i];
+    }
+    this.volume = value / this.buf.length;
+    return this.volume;
+  };
+
+  Checker.prototype.updatePitch = function () {
+    var cycles = [];
+    this.analyser.getByteTimeDomainData(this.buf);
+    var ac = autoCorrelate(this.buf, audioContext.sampleRate);
+    if (ac !== -1) {
+      this.pitch = ac;
+      this.note = noteFromPitch(ac);
+      this.detune = centsOffFromPitch(ac, this.note);
+      this.noteString = NOTE_STRINGS[this.note % 12];
+    }
+    requestAnimationFrame(this.updatePitch.bind(this));
+  };
+
   exports.pitchDetector = new Detector();
+  exports.volumeChecker = new Checker();
+
 })(this);

@@ -69,7 +69,9 @@
             break;
 
           case 'bulletInfo':
-            hisBullets.push( new Bullet(message.data.bulletX, message.data.bulletY, otherP, message.data.bulletVolume));
+            hisBullets.push(
+              new Bullet(message.data.bulletX, message.data.bulletY, otherP, message.data.bulletVolume, message.data.bulletDirection)
+              );
             break;
 
           case 'heIsShooting':
