@@ -125,7 +125,7 @@
       //peer.removeListener('connection');
       setConnection(c);
 
-      var call = peer.call($('#rid').val(), audioStream);
+      var call = peer.call($('#rid').val(), pitchDetector.audioStream);
 
       c.on('error', function(err){
         alert(err);

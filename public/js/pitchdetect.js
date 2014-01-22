@@ -77,82 +77,60 @@
   //        var best_frequency = sampleRate/best_offset;
   }
 
-  function Detector() {
+function Detector() {
     this.pitch;
     this.note;
     this.noteString = '';
     this.detune = 0;
-    this.analyser = null;
-    this.buflen = 2048;
-    this.buf = new Uint8Array(this.buflen);
-    this.requestId = null;
-    this.mediaStreamSource = null;
-    this.audioStream = null;
-  }
-
-  Detector.prototype.gotStream = function (stream) {
-    //make it for the peer call
-    //this.audioStream = stream;
-    // Create an AudioNode from the stream.
-    mediaStreamSource = audioContext.createMediaStreamSource(stream);
-    // Connect it to the destination.
-    this.analyser = audioContext.createAnalyser();
-    this.analyser.fftSize = 2048;
-    mediaStreamSource.connect(this.analyser);
-    this.updatePitch();
-  };
-
-  Detector.prototype.updatePitch = function () {
-    var cycles = [];
-    this.analyser.getByteTimeDomainData(this.buf);
-    var ac = autoCorrelate(this.buf, audioContext.sampleRate);
-    if (ac !== -1) {
-      this.pitch = ac;
-      this.note = noteFromPitch(ac);
-      this.detune = centsOffFromPitch(ac, this.note);
-      this.noteString = NOTE_STRINGS[this.note % 12];
-    }
-    requestAnimationFrame(this.updatePitch.bind(this));
-    console.log(this.pitch);
-  };
-
-  function Checker() {
-    this.pitch;
-    this.note;
-    this.noteString = '';
-    this.detune = 0;
-    this.analyser = null;
-    this.buflen = 64;
-    this.buf = new Uint8Array(this.buflen);
+    this.analyserPitch = null;
+    this.analyserVolume = null;
+    this.buflenPitch = 2048;
+    this.bufPitch = new Uint8Array(this.buflenPitch);
+    this.buflenVolume = 64;
+    this.bufVolume = new Uint8Array(this.buflenVolume);
     this.requestId = null;
     this.mediaStreamSource = null;
     this.audioStream = null;
     this.volume = null;
   }
 
-  Checker.prototype.gotStream = function (stream) {
+  Detector.prototype.startLiveInput = function () {
+    getUserMedia({audio: true}, this.gotStream.bind(this));
+  };
+
+  Detector.prototype.gotStream = function (stream) {
+    //make it for the peer call
+    this.audioStream = stream;
     // Create an AudioNode from the stream.
-    mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    this.mediaStreamSource = audioContext.createMediaStreamSource(stream);
+
     // Connect it to the destination.
-    this.analyser = audioContext.createAnalyser();
-    this.analyser.fftSize = 2048;
-    mediaStreamSource.connect(this.analyser);
+    this.analyserPitch = audioContext.createAnalyser();
+    this.analyserPitch.fftSize = 2048;
+    this.mediaStreamSource.connect(this.analyserPitch);
+
+    this.analyserVolume = audioContext.createAnalyser();
+    this.analyserVolume.fftSize = 64;
+    this.mediaStreamSource.connect(this.analyserVolume);
+
     this.updatePitch();
   };
 
-  Checker.prototype.getAverageVolume = function(){
+  Detector.prototype.getAverageVolume = function(){
     var value = 0;
-    for(var i = 0; i< this.buf.length; i++){
-      value += this.buf[i];
+    for(var i = 0; i< this.bufVolume.length; i++){
+      value += this.bufVolume[i];
     }
-    this.volume = value / this.buf.length;
+    this.volume = value / this.bufVolume.length;
+    console.log(this.volume);
     return this.volume;
   };
 
-  Checker.prototype.updatePitch = function () {
+  Detector.prototype.updatePitch = function () {
     var cycles = [];
-    this.analyser.getByteTimeDomainData(this.buf);
-    var ac = autoCorrelate(this.buf, audioContext.sampleRate);
+    this.analyserPitch.getByteTimeDomainData(this.bufPitch);
+    this.analyserVolume.getByteTimeDomainData(this.bufVolume);
+    var ac = autoCorrelate(this.bufPitch, audioContext.sampleRate);
     if (ac !== -1) {
       this.pitch = ac;
       this.note = noteFromPitch(ac);
@@ -163,12 +141,5 @@
   };
 
   exports.pitchDetector = new Detector();
-  exports.volumeChecker = new Checker();
-
-  getUserMedia({audio:true},function(stream){
-    exports.pitchDetector.gotStream(stream);
-    exports.volumeChecker.gotStream(stream);
-    exports.audioStream = stream;
-  });
-
+  exports.pitchDetector.startLiveInput();
 })(this);

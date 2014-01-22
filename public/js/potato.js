@@ -1,5 +1,4 @@
 (function (exports) {
-  //pitchDetector.startLiveInput();
 
   var canvas = document.getElementById("myCanvas");
   var potatoes = [];
@@ -75,7 +74,7 @@
 
       if(iAmShooting){
         //console.log(pitchDetector.getAverageVolume());
-        var myVolume = processing.map(volumeChecker.getAverageVolume(), 125, 130, 1, 20);
+        var myVolume = processing.map(pitchDetector.getAverageVolume(), 126, 129, 2, 40);
         if(shootCounter % 4 === 0){
           myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing, myVolume, potatoes[0].direction));
           if(connectAlready){
