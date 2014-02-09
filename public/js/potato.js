@@ -3,24 +3,27 @@
   var canvas = document.getElementById("myCanvas");
   var potatoes = [];
   var otherN, otherP;
-  var myBullets  = [];
+  var myBullets = [];
   var hisBullets = [];
+  var wall;
 
   var p = new Processing(canvas, sketchProc);
-    // Simple way to attach js code to the canvas is by using a function
+  // Simple way to attach js code to the canvas is by using a function
   function sketchProc(processing) {
     var n, connectFrameCounter, shootCounter;
     var prePosition = [];
-    var monsters  = [];
+    var monsters = [];
+    wall = 0;
 
     processing.setup = function () {
       n = 20;
-      connectFrameCounter  = 0;
+      connectFrameCounter = 0;
       shootCounter = 0;
       processing.size(1201, 700);
       processing.frameRate(20);
       processing.smooth();
-      potatoes.push(new Potato(processing.width / 2, processing.height - 40, n, processing));
+      potatoes.push(new Potato(processing.width / 2, processing.height - 40,
+        n, processing));
       //potatoes[0] = new Potato( processing.width / 2, processing.height / 2, n, processing );
       otherN = n;
       otherP = processing;
@@ -33,57 +36,75 @@
 
       processing.background(0);
       processing.stroke(255);
-      processing.line(0, processing.height - 40, processing.width, processing.height - 40);
+      processing.line(0, processing.height - 40, processing.width, processing
+        .height - 40);
 
       potatoes[0].jump(40, 500);
-      potatoes.forEach(function(item){
+      potatoes.forEach(function (item) {
         item.paint();
       });
 
-      if(connectAlready){
+      if (connectAlready) {
 
-        if( processing.dist( prePosition[0], prePosition[1], potatoes[0].x, potatoes[0].y ) > 6 ){
+        if (processing.dist(prePosition[0], prePosition[1], potatoes[0].x,
+          potatoes[0].y) > 6) {
           var potatoInfoData = {
             potatoX: potatoes[0].x,
             potatoY: potatoes[0].y,
-            potatoDirection: potatoes[0].direction
+            potatoDirection: potatoes[0].direction,
+            potatoColor: [
+              potatoes[0].c1, potatoes[0].c2, potatoes[0].c3
+            ]
           };
           sendWithType('potatoInfo', potatoInfoData);
           prePosition[0] = potatoes[0].x;
           prePosition[1] = potatoes[0].y;
         }
 
-        connectFrameCounter ++;
+        connectFrameCounter++;
       }
 
-      if( connectFrameCounter !== 0 && connectFrameCounter % 100 === 0 ){
-        var monsterX = processing.map( Math.cos(connectFrameCounter), 0, 1, 0, processing.width );
-        var monsterY = processing.map( Math.sin(connectFrameCounter), 0, 1, 0, processing.height );
-        monsters.push(new Monster( monsterX, monsterY, 70, processing));
-      }
-      monsters.forEach(function(item){
-        item.fly(Math.cos(connectFrameCounter) * 2 - 1, Math.sin(connectFrameCounter) * 2 );
-        for(var i=0; i< myBullets.length; i++){
-          item.fight(myBullets[i].x, myBullets[i].y);
+      if (connectFrameCounter !== 0) {
+        //var time = map(Math.sq(connectFrameCounter / 10), 0, 10000000000000, 1, 10000);
+        if ((connectFrameCounter * connectFrameCounter) % 1000 === 0) {
+          var power = Math.sin(connectFrameCounter) * 30 + 30;
+          var speed = Math.sin(connectFrameCounter * 10) * 4 + 4.2;
+          var monsterY = processing.map(Math.sin(connectFrameCounter * 4), -1,
+            1,
+            power,
+            processing.height - 40 - power);
+
+          monsters.push(new Monster(monsterY, power, processing, speed));
         }
-        for(var j=0; j< hisBullets.length; j++){
-          item.fight(hisBullets[j].x, hisBullets[j].y);
+      }
+      monsters.forEach(function (item) {
+        item.fly();
+        item.buildWall();
+        for (var i = 0; i < myBullets.length; i++) {
+          item.fight(myBullets[i].x, myBullets[i].y, myBullets[i].v);
+        }
+        for (var j = 0; j < hisBullets.length; j++) {
+          item.fight(hisBullets[j].x, hisBullets[j].y, hisBullets[j].v);
         }
         item.display();
       });
 
-      if(iAmShooting){
+      if (iAmShooting) {
         //console.log(pitchDetector.getAverageVolume());
-        var myVolume = processing.map(pitchDetector.getAverageVolume(), 126, 129, 2, 40);
-        if(shootCounter % 4 === 0){
-          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y, processing, myVolume, potatoes[0].direction));
-          if(connectAlready){
+        var myVolume = processing.map(pitchDetector.getAverageVolume(), 126,
+          136, 2, 40);
+        if (shootCounter % 2 === 0) {
+          myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y,
+            processing,
+            myVolume, potatoes[0].direction, potatoes[0].c1, potatoes[0].c2,
+            potatoes[0].c3));
+          if (connectAlready) {
             //how many bullets are here?
             var bulletInfoData = {
-              bulletX:potatoes[0].x,
-              bulletY:potatoes[0].y,
-              bulletVolume:myVolume,
-              bulletDirection:potatoes[0].direction
+              bulletX: potatoes[0].x,
+              bulletY: potatoes[0].y,
+              bulletVolume: myVolume,
+              bulletDirection: potatoes[0].direction
             };
             sendWithType('bulletInfo', bulletInfoData);
           }
@@ -91,49 +112,51 @@
         shootCounter++;
       }
 
-      myBullets.forEach(function(item){
+      myBullets.forEach(function (item) {
 
         item.update();
-        for(var k=0; k< monsters.length; k++){
+        for (var k = 0; k < monsters.length; k++) {
           item.shoot(monsters[k].x, monsters[k].y);
         }
         item.show(potatoes[0].direction);
       });
 
-      hisBullets.forEach(function(item){
+      hisBullets.forEach(function (item) {
         item.update(potatoes[1].direction);
-        for(var m=0; m< monsters.length; m++){
+        for (var m = 0; m < monsters.length; m++) {
           item.shoot(monsters[m].x, monsters[m].y);
         }
         item.show(potatoes[1].direction);
       });
 
-
-      for(var n=0; n<myBullets.length; n++){
-        if(myBullets[n].v < 1 || myBullets[n].x < -myBullets[n].v/2 || myBullets[n].x > processing.width + myBullets[n].v/2 || myBullets[n].life < 0){
-          myBullets.splice(n,1);
+      for (var n = 0; n < myBullets.length; n++) {
+        if (myBullets[n].v < 1 || myBullets[n].x < -myBullets[n].v / 2 ||
+          myBullets[n].x > processing.width + myBullets[n].v / 2 ||
+          myBullets[
+            n].life < 0) {
+          myBullets.splice(n, 1);
         }
       }
-      for(var o=0; o<hisBullets.length; o++){
-        if(hisBullets[o].v < 1 || hisBullets[o].x < - hisBullets[o].v/2 || hisBullets[o].x > processing.width + hisBullets[o].v/2 || hisBullets[o].life < 0){
-          hisBullets.splice(o,1);
+      for (var o = 0; o < hisBullets.length; o++) {
+        if (hisBullets[o].v < 2 || hisBullets[o].x < -hisBullets[o].v / 2 ||
+          hisBullets[o].x > processing.width + hisBullets[o].v / 2) {
+          hisBullets.splice(o, 1);
         }
       }
-      for(var p=0; p<monsters.length; p++){
-        if(monsters[p].power <= 0 || monsters[p].x < - monsters[p].power/2 || monsters[p].x > processing.width + monsters[p].power/2){
-          monsters.splice(p,1);
+      for (var p = 0; p < monsters.length; p++) {
+        if (monsters[p].power <= 2) {
+          monsters.splice(p, 1);
         }
       }
 
     };
 
-    processing.mousePressed = function(){
+    processing.mousePressed = function () {
       console.log(pitchDetector.minBuf);
       var disX = processing.mouseX - potatoes[0].x;
-      if(disX < 0){
+      if (disX < 0) {
         potatoes[0].direction = 'left';
-      }
-      else{
+      } else {
         potatoes[0].direction = 'right';
       }
       potatoes[0].x += disX * 0.1;
@@ -146,5 +169,6 @@
   exports.otherP = otherP;
   exports.myBullets = myBullets;
   exports.hisBullets = hisBullets;
+  exports.wall = wall;
 
 })(this);
