@@ -48,6 +48,8 @@
     var Bullet = function (x, y, p, v, direction, a, b, c) {
       this.x = x;
       this.y = y;
+      this.vel = 0;
+      this.acc = 2;
       this.processing = p;
       this.v = v;
       this.direction = direction;
@@ -58,11 +60,13 @@
 
     Bullet.prototype.update = function () {
       //this.v --;
+      this.vel += this.acc;
       if (this.direction === 'right') {
-        this.x += 12;
+        this.x += this.vel;
       } else {
-        this.x -= 12;
+        this.x -= this.vel;
       }
+
       if (this.v > 8) {
         this.v -= this.v / 8;
       } else {

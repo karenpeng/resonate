@@ -35,6 +35,15 @@
     processing.draw = function () {
 
       processing.background(0);
+
+      if (wall >= processing.width) {
+        processing.fill(0);
+        processing.textSize(100);
+        processing.text("GAME OVER", processing.width / 2 - 100, processing.height /
+          2 - 100);
+        processing.noLoop();
+      }
+
       processing.stroke(255);
       processing.line(0, processing.height - 40, processing.width, processing
         .height - 40);
@@ -151,16 +160,17 @@
 
     };
 
-    processing.mousePressed = function () {
-      console.log(pitchDetector.minBuf);
-      var disX = processing.mouseX - potatoes[0].x;
-      if (disX < 0) {
+    $(window).keydown(function (event) {
+      if (event.which === 37) {
         potatoes[0].direction = 'left';
-      } else {
-        potatoes[0].direction = 'right';
+        potatoes[0].x -= 10;
       }
-      potatoes[0].x += disX * 0.1;
-    };
+      if (event.which === 39) {
+        potatoes[0].direction = 'right';
+        potatoes[0].x += 10;
+      }
+
+    });
 
   }
 
