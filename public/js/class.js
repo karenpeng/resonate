@@ -66,12 +66,14 @@
       } else {
         this.x -= this.vel;
       }
-
+      this.v -= 0.4;
+      /*
       if (this.v > 8) {
         this.v -= this.v / 8;
       } else {
         this.v -= 0.4;
       }
+      */
     };
 
     Bullet.prototype.shoot = function (x, y) {
@@ -132,6 +134,7 @@
           this.power, this.power);
       } else {
         this.processing.fill(255);
+        this.processing.stroke(255);
         this.processing.rect(this.x, 0,
           this.power, this.processing.height);
       }

@@ -5,7 +5,7 @@
   var otherN, otherP;
   var myBullets = [];
   var hisBullets = [];
-  var wall;
+  exports.wall = 0;
 
   var p = new Processing(canvas, sketchProc);
   // Simple way to attach js code to the canvas is by using a function
@@ -13,15 +13,17 @@
     var n, connectFrameCounter, shootCounter;
     var prePosition = [];
     var monsters = [];
-    wall = 0;
+    //exports.wall = 0;
 
     processing.setup = function () {
       n = 20;
       connectFrameCounter = 0;
       shootCounter = 0;
-      processing.size(1201, 700);
+      processing.size(1201, 680);
       processing.frameRate(20);
       processing.smooth();
+      //$("#over").hide();
+
       potatoes.push(new Potato(processing.width / 2, processing.height - 40,
         n, processing));
       //potatoes[0] = new Potato( processing.width / 2, processing.height / 2, n, processing );
@@ -37,16 +39,19 @@
       processing.background(0);
 
       if (wall >= processing.width) {
-        processing.fill(0);
-        processing.textSize(100);
-        processing.text("GAME OVER", processing.width / 2 - 100, processing.height /
-          2 - 100);
+        $("#over").show();
+        console.log("game over");
         processing.noLoop();
       }
 
       processing.stroke(255);
       processing.line(0, processing.height - 40, processing.width, processing
         .height - 40);
+
+      potatoes[0].x = processing.constrain(potatoes[0].x, exports.wall +
+        potatoes[0].n / 2,
+        processing.width -
+        potatoes[0].n / 2);
 
       potatoes[0].jump(40, 500);
       potatoes.forEach(function (item) {
@@ -76,7 +81,7 @@
       if (connectFrameCounter !== 0) {
         //var time = map(Math.sq(connectFrameCounter / 10), 0, 10000000000000, 1, 10000);
         if ((connectFrameCounter * connectFrameCounter) % 1000 === 0) {
-          var power = Math.sin(connectFrameCounter) * 30 + 30;
+          var power = Math.sin(connectFrameCounter) * 30 + 40;
           var speed = Math.sin(connectFrameCounter * 10) * 4 + 4.2;
           var monsterY = processing.map(Math.sin(connectFrameCounter * 4), -1,
             1,
@@ -147,13 +152,14 @@
         }
       }
       for (var o = 0; o < hisBullets.length; o++) {
-        if (hisBullets[o].v < 2 || hisBullets[o].x < -hisBullets[o].v / 2 ||
+        if (hisBullets[o].v < 2 || hisBullets[o].x < wall - hisBullets[o].v /
+          2 ||
           hisBullets[o].x > processing.width + hisBullets[o].v / 2) {
           hisBullets.splice(o, 1);
         }
       }
       for (var p = 0; p < monsters.length; p++) {
-        if (monsters[p].power <= 2) {
+        if (monsters[p].power <= 8) {
           monsters.splice(p, 1);
         }
       }
@@ -169,7 +175,10 @@
         potatoes[0].direction = 'right';
         potatoes[0].x += 10;
       }
-
+      potatoes[0].x = processing.constrain(potatoes[0].x, exports.wall +
+        potatoes[0].n / 2,
+        processing.width -
+        potatoes[0].n / 2);
     });
 
   }
@@ -179,6 +188,5 @@
   exports.otherP = otherP;
   exports.myBullets = myBullets;
   exports.hisBullets = hisBullets;
-  exports.wall = wall;
 
 })(this);
