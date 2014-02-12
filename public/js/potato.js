@@ -22,7 +22,7 @@
       processing.size(1201, 680);
       processing.frameRate(20);
       processing.smooth();
-      //$("#over").hide();
+      $("#over").hide();
 
       potatoes.push(new Potato(processing.width / 2, processing.height - 40,
         n, processing));
@@ -38,7 +38,7 @@
 
       processing.background(0);
 
-      if (wall >= processing.width) {
+      if (wall >= processing.width - potatoes[0].n) {
         $("#over").show();
         console.log("game over");
         processing.noLoop();
@@ -53,7 +53,7 @@
         processing.width -
         potatoes[0].n / 2);
 
-      potatoes[0].jump(40, 500);
+      potatoes[0].jump(40, 560);
       potatoes.forEach(function (item) {
         item.paint();
       });
@@ -81,7 +81,7 @@
       if (connectFrameCounter !== 0) {
         //var time = map(Math.sq(connectFrameCounter / 10), 0, 10000000000000, 1, 10000);
         if ((connectFrameCounter * connectFrameCounter) % 1000 === 0) {
-          var power = Math.sin(connectFrameCounter) * 30 + 40;
+          var power = Math.sin(connectFrameCounter) * 30 + 46;
           var speed = Math.sin(connectFrameCounter * 10) * 4 + 4.2;
           var monsterY = processing.map(Math.sin(connectFrameCounter * 4), -1,
             1,
@@ -106,7 +106,7 @@
       if (iAmShooting) {
         //console.log(pitchDetector.getAverageVolume());
         var myVolume = processing.map(pitchDetector.getAverageVolume(), 126,
-          136, 2, 40);
+          138, 2, 40);
         if (shootCounter % 2 === 0) {
           myBullets.push(new Bullet(potatoes[0].x, potatoes[0].y,
             processing,
@@ -169,11 +169,11 @@
     $(window).keydown(function (event) {
       if (event.which === 37) {
         potatoes[0].direction = 'left';
-        potatoes[0].x -= 10;
+        potatoes[0].x -= 16;
       }
       if (event.which === 39) {
         potatoes[0].direction = 'right';
-        potatoes[0].x += 10;
+        potatoes[0].x += 16;
       }
       potatoes[0].x = processing.constrain(potatoes[0].x, exports.wall +
         potatoes[0].n / 2,

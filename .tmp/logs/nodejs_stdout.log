@@ -1,4 +1,4 @@
 Warning: connection.session() MemoryStore is not
 designed for a production environment, as it will leak
 memory, and will not scale past a single process.
-[Sun Feb 09 2014 12:10:16 GMT-0500 (EST)] [master:29438] Server started, listen at 7001, cluster: false
+[Mon Feb 10 2014 09:46:42 GMT-0500 (EST)] [master:988] Server started, listen at 7001, cluster: false
