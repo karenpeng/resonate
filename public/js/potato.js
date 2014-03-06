@@ -80,6 +80,7 @@
 
       if (connectFrameCounter !== 0) {
         //var time = map(Math.sq(connectFrameCounter / 10), 0, 10000000000000, 1, 10000);
+        //if(processing.random(1)< val)
         if ((connectFrameCounter * connectFrameCounter) % 1000 === 0) {
           var power = Math.sin(connectFrameCounter) * 30 + 46;
           var speed = Math.sin(connectFrameCounter * 10) * 4 + 4.2;

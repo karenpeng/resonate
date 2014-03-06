@@ -62,9 +62,9 @@
     for (var offset = MIN_SAMPLES; offset <= MAX_SAMPLES; offset++) {
       var correlation = 0;
 
-      for (var i = 0; i < SIZE; i++) {
-        correlation += Math.abs(((buf[i] - 128) / 128) -
-          ((buf[i + offset] - 128) / 128));
+      for (var j = 0; j < SIZE; j++) {
+        correlation += Math.abs(((buf[j] - 128) / 128) -
+          ((buf[j + offset] - 128) / 128));
       }
       correlation = 1 - (correlation / SIZE);
       if (correlation > best_correlation) {
@@ -82,19 +82,17 @@
 
   function Detector() {
     this.pitch;
+    this.volume;
     this.note;
     this.noteString = '';
     this.detune = 0;
     this.analyserPitch = null;
     this.analyserVolume = null;
-    this.buflenPitch = 2048;
-    this.bufPitch = new Uint8Array(this.buflenPitch);
-    this.buflenVolume = 64;
-    this.bufVolume = new Uint8Array(this.buflenVolume);
+    this.bufPitch = new Uint8Array(2048);
+    this.bufVolume = new Uint8Array(64);
     this.requestId = null;
     this.mediaStreamSource = null;
     this.audioStream = null;
-    this.volume = null;
   }
 
   Detector.prototype.startLiveInput = function () {
@@ -119,22 +117,22 @@
     this.mediaStreamSource.connect(this.analyserVolume);
 
     this.updatePitch();
+    this.getAverageVolume();
   };
 
   Detector.prototype.getAverageVolume = function () {
     var value = 0;
+    this.analyserVolume.getByteTimeDomainData(this.bufVolume);
     for (var i = 0; i < this.bufVolume.length; i++) {
       value += this.bufVolume[i];
     }
     this.volume = value / this.bufVolume.length;
-    //console.log(this.volume);
-    return this.volume;
+    requestAnimationFrame(this.getAverageVolume.bind(this));
   };
 
   Detector.prototype.updatePitch = function () {
     var cycles = [];
     this.analyserPitch.getByteTimeDomainData(this.bufPitch);
-    this.analyserVolume.getByteTimeDomainData(this.bufVolume);
     var ac = autoCorrelate(this.bufPitch, audioContext.sampleRate);
     if (ac !== -1) {
       this.pitch = ac;

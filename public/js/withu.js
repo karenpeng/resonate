@@ -45,49 +45,19 @@
     exports.connections.on('open', function () {
 
       exports.connectAlready = true;
-
-      var initPositionData = {
-        initX: potatoes[0].x,
-        initY: potatoes[0].y
-      };
-      sendWithType('initPosition', initPositionData);
+      reStart();
 
       exports.connections.on('data', function (message) {
 
         switch (message.type) {
-        case 'initPosition':
-          if (counter === 0) {
-            potatoes.push(new Potato(message.data.initX, message.data.initY,
-              otherN, otherP));
-            counter = 1;
-          }
+
+        case 'upData':
+          console.log(message.data.hh);
+          mashes[1].goUp(message.data.hh);
           break;
 
-        case 'potatoInfo':
-          potatoes[1].x = message.data.potatoX;
-          potatoes[1].y = message.data.potatoY;
-          potatoes[1].direction = message.data.potatoDirection;
-          potatoes[1].c1 = message.data.potatoColor[0];
-          potatoes[1].c2 = message.data.potatoColor[1];
-          potatoes[1].c3 = message.data.potatoColor[2];
-          break;
-
-        case 'bulletInfo':
-          hisBullets.push(
-            new Bullet(message.data.bulletX, message.data.bulletY, otherP,
-              message.data.bulletVolume, message.data.bulletDirection,
-              potatoes[1].c1, potatoes[1].c2, potatoes[1].c3)
-          );
-          break;
-
-        case 'heIsShooting':
-          if (message.data.heShoots) {
-            console.log("play");
-            hisVoice.play();
-          } else {
-            console.log("pause");
-            hisVoice.pause();
-          }
+        case 'rightData':
+          mashes[1].addF(right);
           break;
 
         default:
@@ -129,10 +99,12 @@
       //peer.removeListener('connection');
       setConnection(c);
 
+      iAmInit = true;
+
       var call = peer.call($('#rid').val(), pitchDetector.audioStream);
-      call.on('stream', function (stream) {
-        $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
-      });
+      // call.on('stream', function (stream) {
+      //   $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
+      // });
 
       c.on('error', function (err) {
         alert(err);
