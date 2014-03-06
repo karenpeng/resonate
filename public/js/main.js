@@ -24,12 +24,6 @@
     $(selector).css("margin-left", gapCss);
   }
 
-  $(window).resize(function () {
-    if (width) {
-      beCenter(width, "canvas");
-    }
-  });
-
   exports.setup = function () {
     createGraphics(1204, 620);
     beCenter(width, "canvas");
@@ -63,6 +57,10 @@
   }
 
   exports.draw = function () {
+    $(window).resize(function () {
+      beCenter(width, "canvas");
+    });
+
     background(255);
     mashes.forEach(function (item) {
       item.renew();
