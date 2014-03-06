@@ -56,7 +56,7 @@
         switch (message.type) {
 
         case 'upData':
-          console.log(message.data.hh);
+          //console.log(message.data.hh);
           mashes[1].goUp(message.data.hh);
           break;
 

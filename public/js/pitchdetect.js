@@ -81,6 +81,7 @@
   }
 
   function Detector() {
+    this.turnOn = false;
     this.pitch;
     this.volume;
     this.note;
@@ -99,6 +100,7 @@
     getUserMedia({
       audio: true
     }, this.gotStream.bind(this));
+    this.turnOn = true;
   };
 
   Detector.prototype.gotStream = function (stream) {

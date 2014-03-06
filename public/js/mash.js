@@ -102,6 +102,8 @@
     this.up = false;
     this.hurt = false;
     this.counter = 0;
+    this.preH = 0;
+    this.me = false;
 
     for (var j = 0; j < this.n; j++) {
       this.b.push(new Ball(x + cos(j * PI / this.n * 2) * size, y +
@@ -168,18 +170,23 @@
   };
 
   Mash.prototype.goUp = function (h) {
-    var up = new PVector(0, -h);
-    this.addF(up);
-    if (h > 0) {
-      this.up = true;
-    } else {
-      this.up = false;
-    }
-    if (reBegin) {
-      var upData = {
-        hh: h
-      };
-      sendWithType('upData', upData);
+    h = Math.floor(h);
+    if (abs(h - this.preH) > 4) {
+      console.log(h, this.preH);
+      var up = new PVector(0, -h);
+      this.addF(up);
+      if (h > 0) {
+        this.up = true;
+      } else {
+        this.up = false;
+      }
+      if (this.me && reBegin && pitchDetector.turnOn) {
+        var upData = {
+          hh: h
+        };
+        sendWithType('upData', upData);
+      }
+      this.preH = h;
     }
   };
 

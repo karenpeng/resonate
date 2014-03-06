@@ -33,6 +33,7 @@
     exports.reBegin = false;
 
     smooth();
+    frameRate(24);
     gravity = new PVector(0, 6);
     left = new PVector(-50, 0);
     right = new PVector(50, 0);
@@ -47,13 +48,16 @@
     mashes = [];
     if (exports.iAmInit) {
       mashes[0] = new Mash(19, 4, 50, width / 4, height / 4);
+      mashes[0].me = true;
       mashes[1] = new Mash(19, 4, 50, width * 3 / 4, height / 4);
     } else {
       mashes[0] = new Mash(19, 4, 50, width * 3 / 4, height / 4);
+      mashes[0].me = true;
       mashes[1] = new Mash(19, 4, 50, width / 4, height / 4);
     }
     bullets = [];
     exports.reBegin = true;
+    exports.mashes = mashes;
   }
 
   exports.draw = function () {
@@ -181,10 +185,9 @@
 
     fill(0);
     var c = connectCount.toString();
-    text(c, width / 2, height / 2);
-    text(mashes.length, width / 2, height / 2 + 20);
+    text(c, mashes[0].center.x, mashes[0].center.y);
 
-  }
+  };
 
   function mapPitch(input) {
     var pitch;
@@ -235,43 +238,42 @@
 
   /////////////////////////////////////////////////////////////////
 
-  $(window).keydown(function (event) {
-    event.preventDefault();
-    if (event.which === 32) {
-      if (!mashes[0].hurt) {
-        var r = mapVolume(pitchDetector.volume);
-        bullets.push(new Bullet(mashes[0].center.x, mashes[0].center[0].y,
-          r));
-      }
-    }
-  });
+  // $(window).keydown(function (event) {
+  //   //event.preventDefault();
+  //   if (event.which === 32) {
+  //     if (!mashes[0].hurt) {
+  //       var r = mapVolume(pitchDetector.volume);
+  //       bullets.push(new Bullet(mashes[0].center.x, mashes[0].center[0].y,
+  //         r));
+  //     }
+  //   }
+  // });
 
-  $(window).keydown(function (event) {
-    event.preventDefault();
-    if (event.which === 37) {
-      mashes[0].addF(left);
-      if (connectAlready) {
-        var leftData = {
-          left: true
-        };
-        sendWithType('leftData', left);
-      }
-    }
-  });
+  // $(window).keydown(function (event) {
+  //   //event.preventDefault();
+  //   if (event.which === 37) {
+  //     mashes[0].addF(left);
+  //     if (connectAlready) {
+  //       var leftData = {
+  //         left: true
+  //       };
+  //       sendWithType('leftData', left);
+  //     }
+  //   }
+  // });
 
-  $(window).keydown(function (event) {
-    event.preventDefault();
-    if (event.which === 39) {
-      mashes[0].addF(right);
-      if (connectAlready) {
-        var rightData = {
-          right: true
-        };
-        sendWithType('rightData', right);
-      }
-    }
-  });
+  // $(window).keydown(function (event) {
+  //   //event.preventDefault();
+  //   if (event.which === 39) {
+  //     mashes[0].addF(right);
+  //     if (connectAlready) {
+  //       var rightData = {
+  //         right: true
+  //       };
+  //       sendWithType('rightData', right);
+  //     }
+  //   }
+  // });
 
-  exports.mashes = mashes;
   exports.hit = hit;
 })(this);
