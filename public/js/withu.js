@@ -5,6 +5,7 @@
   exports.mediaStream = null;
   exports.connectAlready = false;
   exports.iAmShooting = false;
+  var reStartCount = 0;
 
   var counter = 0;
   var keyCounter = 0;
@@ -45,7 +46,10 @@
     exports.connections.on('open', function () {
 
       exports.connectAlready = true;
-      reStart();
+      if (reStartCount === 0) {
+        reStart();
+        reStartCount = 1;
+      }
 
       exports.connections.on('data', function (message) {
 
