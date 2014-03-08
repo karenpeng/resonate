@@ -175,18 +175,22 @@
       //console.log(h, this.preH);
       var up = new PVector(0, -h);
       this.addF(up);
-      if (h > 0) {
-        this.up = true;
-      } else {
-        this.up = false;
-      }
-      if (this.me && pitchDetector.turnOn) {
-        var upData = {
-          hh: h
-        };
-        sendWithType('upData', upData);
-      }
+      this.up = true;
+      // if (this.me && pitchDetector.turnOn) {
+      //   var upData = {
+      //     hh: h
+      //   };
+      //   sendWithType('upData', upData);
+      // }
       this.preH = h;
+    } else {
+      this.up = false;
+    }
+    if (this.me && pitchDetector.turnOn) {
+      var upData = {
+        hh: h
+      };
+      sendWithType('upData', upData);
     }
   };
 

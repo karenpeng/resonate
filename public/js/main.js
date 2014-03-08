@@ -1,6 +1,6 @@
 (function (exports) {
 
-  var gravity = new PVector(0, 8);
+  var gravity = new PVector(0, 7);
   var left = new PVector(-50, 0);
   var right = new PVector(50, 0);
   var threshold;
@@ -11,12 +11,13 @@
   var bullets = [];
   var wat = 0.01;
   exports.hit = 0;
-  var blockCounter = 0;
-  var getTextCounter = 0;
+  var blockCount = 0;
   var theta = 0;
   var connectCount;
   exports.iAmInit;
-  var shootCount = 0;
+  // var shootCount = 0;
+  var headLine;
+  var interval;
 
   function beCenter(w, selector) {
     var windowWidth = window.innerWidth;
@@ -32,6 +33,7 @@
     exports.width = width;
     exports.iAmInit = false;
     connectCount = 0;
+    interval = 80;
 
     smooth();
     frameRate(24);
@@ -73,23 +75,26 @@
     });
     mashes[0].goUp(mapPitch(pitchDetector.pitch));
 
-    if (wat >= 1) {
-      wat -= 0.00001;
+    // if (wat >= 1) {
+    //   wat -= 0.00001;
+    // }
+    if (interval < 4) {
+      interval = 4;
     }
 
     if (connectAlready) {
-      //   if (theta === 0) {
-      //     reStart();
-      //   }
-      wat += 0.00001;
+      // wat += 0.00001;
+      interval -= 0.004;
       theta++;
       connectCount++;
+      console.log(interval);
 
       //if (map(cos(theta), -1, 1, 0, 1) < wat) {
-      if (connectCount * connectCount % 1000 === 0) {
-        var result = getText();
-        if (result.t) {
-          blocks.push(new Block(result.t, theta));
+      if (connectCount % Math.round(interval) === 0) {
+        //if (connectCount * 4 % 200 === 0) {
+        getText();
+        if (headLine) {
+          blocks.push(new Block(headLine, theta));
         }
       }
     }
@@ -106,9 +111,6 @@
         })
       }
     }
-    //mash.addF(right);
-    //mash.addF(left);
-    //jumper.renew();
     /*
   mash.b.forEach(function (item) {
     jumper.b.forEach(function (key) {
@@ -187,7 +189,6 @@
     fill(0);
     var c = connectCount.toString();
     text(c, mashes[0].center.x, mashes[0].center.y);
-
     exports.bullets = bullets;
 
   };
@@ -197,8 +198,8 @@
     if (input < 10 || input > 1000) {
       pitch = 0;
     } else {
-      pitch = map(input, 40, 700, 0, 50);
-      pitch = constrain(pitch, 0, 50);
+      pitch = map(input, 40, 700, 0, 55);
+      pitch = constrain(pitch, 0, 60);
     }
     return pitch;
   }
@@ -208,26 +209,21 @@
     if (input < 127 || input > 140) {
       volume = 0;
     } else {
-      volume = map(input, 128, 140, 0, 80);
-      volume = constrain(volume, 0, 80);
+      volume = map(input, 127.5, 140, 0, 70);
+      volume = constrain(volume, 0, 100);
     }
     return volume;
   }
 
   function getText() {
-    if (blockCounter === 0) {
+    if ((asyncCount === 0 && blockCount === 0) || asyncCount - blockCount < 0) {
       getNYTimesData();
+      blockCount = 0;
     }
-    var t = articleObj[blockCounter];
-    //if (t) {
-    blockCounter++;
-    //}
-    if (blockCounter > 9) {
-      blockCounter = 0;
+    headLine = articleObj[blockCount];
+    if (asyncCount >= blockCount) {
+      blockCount++;
     }
-    return {
-      t: t
-    };
   }
 
   function drawBoundary() {

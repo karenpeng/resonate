@@ -1,8 +1,10 @@
 var i = 1;
 var articleObj;
+var asyncCount = 0;
 
 function getNYTimesData() {
   articleObj = [];
+  asyncCount = 0;
   "use strict";
   var nyTimesSearchURL =
     'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=new+york+times&page=' +
@@ -28,8 +30,9 @@ function getNYTimesData() {
       for (var i = 0; i < nyTimesArticles.length; i++) {
         articleObj.push(nyTimesArticles[i].headline
           .main);
+        asyncCount++;
       }
-      i++;
     }
   });
+  i++;
 }
