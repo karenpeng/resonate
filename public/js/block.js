@@ -1,9 +1,9 @@
 (function (exports) {
 
   function Block(text, theta) {
-    this.h = map(sin(theta), -1, 1, 12, 27);
+    this.h = map(sin(theta), -1, 1, 12, 28);
     this.loc = new PVector(width, map(sin(theta), -1, 1, 0, height - this.h));
-    this.vel = new PVector(map(cos(theta), -1, 1, -6, -44), 0);
+    this.vel = new PVector(map(cos(theta), -1, 1, -6, -46), 0);
     this.isDead = false;
     this.text = text;
   }
@@ -47,7 +47,6 @@
     // rect(this.loc.x, this.loc.y, this.w, this.h);
 
   };
-
   //////////////////////////////////////////////////////////////
 
   function Bullet(x, y, r) {

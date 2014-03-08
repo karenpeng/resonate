@@ -4,12 +4,7 @@
   exports.connections = null;
   exports.mediaStream = null;
   exports.connectAlready = false;
-  exports.iAmShooting = false;
-  var reStartCount = 0;
-
-  var counter = 0;
-  var keyCounter = 0;
-  var hisVoice = document.getElementById("somebodyVoice");
+  var hisVoice;
   var readyCallback = function () {};
 
   exports.connectionReady = function (callback) {
@@ -39,30 +34,45 @@
 
   peer.on('open', function (id) {
     $('#pid').text(id);
-    exports.myId = peer.id;
   });
 
   function onConnection() {
     exports.connections.on('open', function () {
 
       exports.connectAlready = true;
-      if (reStartCount === 0) {
-        reStart();
-        reStartCount = 1;
-      }
+      reStart();
 
       exports.connections.on('data', function (message) {
 
         switch (message.type) {
 
         case 'upData':
-          //console.log(message.data.hh);
           mashes[1].goUp(message.data.hh);
           break;
 
         case 'rightData':
           mashes[1].addF(right);
           break;
+
+        case 'leftData':
+          mashes[1].addF(left);
+          break;
+
+        case 'bulletInfo':
+          bullets.push(new Bullet(message.data.bulletX, message
+            .data.bulletY, message.data.bulletR));
+          break;
+
+          // case 'shootingData':
+          //   hisVoice = document.getElementById("somebodyVoice");
+          //   if (message.data.heShoots) {
+          //     console.log("play");
+          //     hisVoice.play();
+          //   } else {
+          //     console.log("pause");
+          //     hisVoice.pause();
+          //   }
+          //   break;
 
         default:
           console.log('unknow message type:', message.type);
@@ -71,6 +81,12 @@
       });
 
     });
+
+    exports.connections.on('close', function () {
+      mashes.splice(1, 1);
+      alert("You're left alone T_T...");
+    });
+
   }
   connectionReady(onConnection);
 
@@ -100,45 +116,15 @@
         return;
       }
       c = peer.connect($('#rid').val());
-      //peer.removeListener('connection');
       setConnection(c);
 
       iAmInit = true;
 
       var call = peer.call($('#rid').val(), pitchDetector.audioStream);
-      // call.on('stream', function (stream) {
-      //   $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
-      // });
-
-      c.on('error', function (err) {
-        alert(err);
+      call.on('stream', function (stream) {
+        $('#somebodyVoice').prop('src', URL.createObjectURL(stream));
       });
 
-    });
-
-    $(window).keydown(function (event) {
-      if (event.which === 32) {
-        keyCounter++;
-        event.preventDefault();
-        exports.iAmShooting = true;
-        if (exports.connectAlready && keyCounter < 2) {
-          var heIsShootingData = {
-            heShoots: exports.iAmShooting
-          };
-          sendWithType('heIsShooting', heIsShootingData);
-        }
-      }
-    });
-
-    $(window).keyup(function (event) {
-      exports.iAmShooting = false;
-      keyCounter = 0;
-      if (exports.connectAlready) {
-        var heIsShootingData = {
-          heShoots: exports.iAmShooting
-        };
-        sendWithType('heIsShooting', heIsShootingData);
-      }
     });
 
   });

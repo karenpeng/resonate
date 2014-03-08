@@ -1,6 +1,8 @@
 (function (exports) {
 
-  var gravity, left, right;
+  var gravity = new PVector(0, 8);
+  var left = new PVector(-50, 0);
+  var right = new PVector(50, 0);
   var threshold;
   var invisibleSpring;
   var counter;
@@ -8,13 +10,13 @@
   var blocks = [];
   var bullets = [];
   var wat = 0.01;
-  hit = 0;
+  exports.hit = 0;
   var blockCounter = 0;
   var getTextCounter = 0;
   var theta = 0;
   var connectCount;
   exports.iAmInit;
-  exports.reBegin;
+  var shootCount = 0;
 
   function beCenter(w, selector) {
     var windowWidth = window.innerWidth;
@@ -30,13 +32,9 @@
     exports.width = width;
     exports.iAmInit = false;
     connectCount = 0;
-    exports.reBegin = false;
 
     smooth();
     frameRate(24);
-    gravity = new PVector(0, 6);
-    left = new PVector(-50, 0);
-    right = new PVector(50, 0);
 
     mashes.push(new Mash(19, 4, 50, width / 2, height / 4));
     invisible = 30;
@@ -56,9 +54,8 @@
       mashes[1] = new Mash(19, 4, 50, width / 4, height / 4);
     }
     bullets = [];
-    exports.reBegin = true;
     exports.mashes = mashes;
-  }
+  };
 
   exports.draw = function () {
     $(window).resize(function () {
@@ -80,19 +77,21 @@
       wat -= 0.00001;
     }
 
-    // if (connectAlready) {
-    //   if (theta === 0) {
-    //     reStart();
-    //   }
-    //if (map(cos(theta), -1, 1, 0, 1) < wat) {
-    if (connectCount * connectCount % 1000 === 0) {
-      var result = getText();
-      if (result.t) {
-        blocks.push(new Block(result.t, theta));
-      }
+    if (connectAlready) {
+      //   if (theta === 0) {
+      //     reStart();
+      //   }
       wat += 0.00001;
       theta++;
       connectCount++;
+
+      //if (map(cos(theta), -1, 1, 0, 1) < wat) {
+      if (connectCount * connectCount % 1000 === 0) {
+        var result = getText();
+        if (result.t) {
+          blocks.push(new Block(result.t, theta));
+        }
+      }
     }
 
     for (var i = blocks.length - 1; i > -1; i--) {
@@ -102,7 +101,9 @@
       } else {
         blocks[i].move();
         blocks[i].show();
-        blocks[i].check(mashes[0]);
+        mashes.forEach(function (item) {
+          blocks[i].check(item);
+        })
       }
     }
     //mash.addF(right);
@@ -172,20 +173,22 @@
     }
 
     if (mashes[0].hurt) {
-      hit += 0.6;
+      exports.hit += 0.6;
     }
     drawBoundary();
 
-    if (hit >= height / 2) {
+    if (exports.hit >= height / 2) {
       textSize(60);
       fill(255);
-      text("GAMEOVER", width / 2 - 180, height / 2);
+      text("GAME OVER", width / 2 - 180, height / 2);
       noLoop();
     }
 
     fill(0);
     var c = connectCount.toString();
     text(c, mashes[0].center.x, mashes[0].center.y);
+
+    exports.bullets = bullets;
 
   };
 
@@ -194,8 +197,8 @@
     if (input < 10 || input > 1000) {
       pitch = 0;
     } else {
-      pitch = map(input, 40, 700, 0, 30);
-      pitch = constrain(pitch, 0, 30);
+      pitch = map(input, 40, 700, 0, 50);
+      pitch = constrain(pitch, 0, 50);
     }
     return pitch;
   }
@@ -205,8 +208,8 @@
     if (input < 127 || input > 140) {
       volume = 0;
     } else {
-      volume = map(input, 127, 140, 0, 60);
-      volume = constrain(volume, 0, 60);
+      volume = map(input, 128, 140, 0, 80);
+      volume = constrain(volume, 0, 80);
     }
     return volume;
   }
@@ -230,50 +233,77 @@
   function drawBoundary() {
     fill(34);
     noStroke();
-    rect(0, 0, width, hit);
-    rect(0, height - hit, width, hit);
-    rect(0, 0, hit, height);
-    rect(width - hit, 0, hit, height);
+    rect(0, 0, width, exports.hit);
+    rect(0, height - exports.hit, width, exports.hit);
+    rect(0, 0, exports.hit, height);
+    rect(width - exports.hit, 0, exports.hit, height);
   }
 
   /////////////////////////////////////////////////////////////////
 
-  // $(window).keydown(function (event) {
-  //   //event.preventDefault();
-  //   if (event.which === 32) {
-  //     if (!mashes[0].hurt) {
-  //       var r = mapVolume(pitchDetector.volume);
-  //       bullets.push(new Bullet(mashes[0].center.x, mashes[0].center[0].y,
-  //         r));
-  //     }
+  $(window).keydown(function (event) {
+    //event.preventDefault();
+    if (event.which === 32) {
+      if (!mashes[0].hurt) {
+        var r = mapVolume(pitchDetector.volume);
+        bullets.push(new Bullet(mashes[0].center.x, mashes[0].center.y,
+          r));
+
+        if (connectAlready) {
+          var bulletInfo = {
+            bulletX: mashes[0].center.x,
+            bulletY: mashes[0].center.y,
+            bulletR: r
+          };
+          sendWithType('bulletInfo', bulletInfo);
+
+          // if (shootCount < 1) {
+          //   var shootingData = {
+          //     heShoots: true
+          //   };
+          //   sendWithType('shootingData', shootingData);
+          //   shootCount++;
+          // }
+        }
+      }
+    }
+  });
+
+  // $(window).keyup(function (event) {
+  //   if (connectAlready) {
+  //     var shootingData = {
+  //       heShoots: false
+  //     };
+  //     sendWithType('shootingData', shootingData);
+  //     shootCount = 0;
   //   }
   // });
 
-  // $(window).keydown(function (event) {
-  //   //event.preventDefault();
-  //   if (event.which === 37) {
-  //     mashes[0].addF(left);
-  //     if (connectAlready) {
-  //       var leftData = {
-  //         left: true
-  //       };
-  //       sendWithType('leftData', left);
-  //     }
-  //   }
-  // });
+  $(window).keydown(function (event) {
+    //event.preventDefault();
+    if (event.which === 37) {
+      mashes[0].addF(left);
+      if (connectAlready) {
+        var leftData = {
+          left: true
+        };
+        sendWithType('leftData', leftData);
+      }
+    }
+  });
 
-  // $(window).keydown(function (event) {
-  //   //event.preventDefault();
-  //   if (event.which === 39) {
-  //     mashes[0].addF(right);
-  //     if (connectAlready) {
-  //       var rightData = {
-  //         right: true
-  //       };
-  //       sendWithType('rightData', right);
-  //     }
-  //   }
-  // });
-
-  exports.hit = hit;
+  $(window).keydown(function (event) {
+    //event.preventDefault();
+    if (event.which === 39) {
+      mashes[0].addF(right);
+      if (connectAlready) {
+        var rightData = {
+          right: true
+        };
+        sendWithType('rightData', rightData);
+      }
+    }
+  });
+  exports.right = right;
+  exports.left = left;
 })(this);

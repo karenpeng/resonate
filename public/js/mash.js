@@ -171,8 +171,8 @@
 
   Mash.prototype.goUp = function (h) {
     h = Math.floor(h);
-    if (abs(h - this.preH) > 4) {
-      console.log(h, this.preH);
+    if (abs(h - this.preH) > 2) {
+      //console.log(h, this.preH);
       var up = new PVector(0, -h);
       this.addF(up);
       if (h > 0) {
@@ -180,7 +180,7 @@
       } else {
         this.up = false;
       }
-      if (this.me && reBegin && pitchDetector.turnOn) {
+      if (this.me && pitchDetector.turnOn) {
         var upData = {
           hh: h
         };

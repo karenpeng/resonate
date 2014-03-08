@@ -18,7 +18,6 @@ function getNYTimesData() {
       console.log(data.status);
     },
     success: function (data) {
-      console.log("WoooHoo!");
       var nyTimesArticles;
       if (!(data.response.docs instanceof Array)) {
         console.log("Huh??? Not an array");
